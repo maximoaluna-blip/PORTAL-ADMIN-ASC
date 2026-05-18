@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Administrativo — Asociación Scouts de Colombia</title>
+
+    <meta name="description" content="Portal administrativo de las plataformas de formacion digital de la Asociacion Scouts de Colombia. Acceso a los paneles de control de cada linea.">
+    <meta name="keywords" content="formacion scout, adultos en el movimiento, ASC, asociacion scouts colombia, politica de adultos, desarrollo institucional, safe from harm">
+    <meta name="author" content="Asociación Scouts de Colombia">
+    <link rel="canonical" href="https://maximoaluna-blip.github.io/PORTAL-ADMIN-ASC/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://maximoaluna-blip.github.io/PORTAL-ADMIN-ASC/">
+    <meta property="og:title" content="Portal Administrativo — ASC">
+    <meta property="og:description" content="Paneles administrativos de las lineas formativas de la Asociacion Scouts de Colombia.">
+    <meta property="og:image" content="https://maximoaluna-blip.github.io/PORTAL-ADMIN-ASC/assets/logo-asc.png">
+    <meta property="og:locale" content="es_CO">
+    <meta property="og:site_name" content="Portal Administrativo ASC">
+
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="icon" type="image/png" href="assets/logo-asc.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <script>(function(){try{var t=localStorage.getItem('rover-theme');if(t==='dark'||(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.setAttribute('data-theme','dark');}}catch(e){}})();</script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --morado: #B71C1C;
+            --morado-oscuro: #7F0000;
+            --amarillo: #FFC107;
+            --gris-bg: #f2f5f7;
+            --gris-card: #ffffff;
+            --gris-texto: #2c2927;
+            --gris-tenue: #636363;
+            --gris-borde: #e0e0e0;
+        }
+
+        [data-theme="dark"] {
+            --gris-bg: #1a1a1a;
+            --gris-card: #2a2a2a;
+            --gris-texto: #f0f0f0;
+            --gris-tenue: #b0b0b0;
+            --gris-borde: #3a3a3a;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--gris-bg);
+            min-height: 100vh;
+            color: var(--gris-texto);
+            line-height: 1.6;
+        }
+
+        /* --- Top Bar --- */
+        .top-bar {
+            background: var(--morado);
+            padding: 14px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+        .top-bar-inner {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .top-bar .logos {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .top-bar .logos img { height: 45px; }
+        .top-bar .logos .separator {
+            width: 1px;
+            height: 35px;
+            background: rgba(255,255,255,0.3);
+        }
+        .top-bar-title {
+            color: #fff;
+            font-size: 0.92em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- Hero --- */
+        .hero {
+            background: linear-gradient(135deg, var(--morado) 0%, var(--morado-oscuro) 100%);
+            color: #fff;
+            padding: 70px 20px 80px;
+            text-align: center;
+            position: relative;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--amarillo);
+        }
+        .hero h1 {
+            font-size: 2.6em;
+            font-weight: 800;
+            margin-bottom: 14px;
+            letter-spacing: -0.5px;
+        }
+        .hero .tagline {
+            font-size: 1.25em;
+            margin-bottom: 22px;
+            opacity: 0.95;
+        }
+        .hero p {
+            max-width: 720px;
+            margin: 0 auto;
+            font-size: 1.02em;
+            opacity: 0.9;
+            line-height: 1.7;
+        }
+
+        /* --- Container --- */
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+        .section-title {
+            font-size: 1.8em;
+            color: var(--morado);
+            margin-bottom: 14px;
+            text-align: center;
+        }
+        .section-subtitle {
+            text-align: center;
+            color: var(--gris-tenue);
+            font-size: 1em;
+            max-width: 640px;
+            margin: 0 auto 40px;
+        }
+
+        /* --- Lineas Grid --- */
+        .lineas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        /* --- Card --- */
+        .linea-card {
+            background: var(--gris-card);
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 4px 16px rgba(98, 37, 153, 0.08);
+            border-top: 5px solid var(--morado);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+        .linea-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(98, 37, 153, 0.15);
+        }
+        .linea-card.coming-soon {
+            opacity: 0.78;
+        }
+        .linea-card.coming-soon::before {
+            content: 'Próximamente';
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--gris-tenue);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.72em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .linea-icon {
+            font-size: 3.4em;
+            margin-bottom: 8px;
+        }
+        .linea-name {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--morado);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        .linea-description {
+            color: var(--gris-tenue);
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 18px;
+            flex: 1;
+        }
+        .linea-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 22px;
+            padding: 14px;
+            background: var(--gris-bg);
+            border-radius: 8px;
+            font-size: 0.88em;
+        }
+        .linea-meta-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            color: var(--gris-texto);
+        }
+        .linea-meta-icon {
+            flex-shrink: 0;
+            font-size: 1.1em;
+        }
+        .linea-meta-label {
+            font-weight: 600;
+            color: var(--morado);
+            margin-right: 4px;
+        }
+
+        .linea-cta {
+            display: block;
+            background: var(--morado);
+            color: #fff;
+            text-align: center;
+            padding: 14px 22px;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9em;
+            transition: background 0.2s;
+        }
+        .linea-cta:hover { background: var(--morado-oscuro); }
+        .linea-cta.disabled {
+            background: var(--gris-borde);
+            color: var(--gris-tenue);
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* --- Info section --- */
+        .info-section {
+            background: var(--gris-card);
+            padding: 50px 20px;
+            margin-top: 30px;
+            border-top: 1px solid var(--gris-borde);
+            border-bottom: 1px solid var(--gris-borde);
+        }
+        .info-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 30px;
+        }
+        .info-block {
+            text-align: center;
+        }
+        .info-block-icon {
+            font-size: 2.4em;
+            margin-bottom: 10px;
+        }
+        .info-block h3 {
+            color: var(--morado);
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+        .info-block p {
+            color: var(--gris-tenue);
+            font-size: 0.9em;
+            line-height: 1.55;
+        }
+
+        /* --- Footer --- */
+        .footer {
+            background: #2c2927;
+            color: #fff;
+            padding: 36px 20px;
+            text-align: center;
+            font-size: 0.88em;
+        }
+        .footer p { margin: 4px 0; opacity: 0.85; }
+        .footer a { color: var(--amarillo); text-decoration: none; }
+
+        /* --- Loading state --- */
+        .loading-msg {
+            text-align: center;
+            color: var(--gris-tenue);
+            padding: 60px 20px;
+            grid-column: 1 / -1;
+        }
+        .error-msg {
+            text-align: center;
+            color: #d32f2f;
+            padding: 30px;
+            grid-column: 1 / -1;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 2em; }
+            .hero .tagline { font-size: 1.05em; }
+            .top-bar .logos img { height: 36px; }
+            .top-bar-title { font-size: 0.75em; }
+            .container { padding: 40px 15px; }
+            .linea-card { padding: 22px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="top-bar-inner">
+            <div class="logos">
+                <img src="assets/logo-asc.png" alt="Asociación Scouts de Colombia">
+                <div class="separator"></div>
+                <img src="assets/logo-vallescout.png" alt="Scouts del Valle">
+            </div>
+            <span class="top-bar-title">Portal Administrativo</span>
+        </div>
+    </div>
+
+    <!-- Hero -->
+    <div class="hero">
+        <h1>Portal Administrativo</h1>
+        <p class="tagline">Paneles de control de las plataformas formativas.</p>
+        <p>Acceso unificado a los paneles administrativos de cada linea formativa de la ASC. Indicadores, registros, certificados y exportaciones por linea.</p>
+    </div>
+
+    <!-- Líneas -->
+    <div class="container">
+        <h2 class="section-title">Paneles administrativos</h2>
+        <p class="section-subtitle">Cada linea formativa tiene su propio panel administrativo con indicadores de inscripciones, completaciones, certificados y exportacion CSV.</p>
+
+        <div class="lineas-grid" id="lineasGrid">
+            <p class="loading-msg">Cargando paneles administrativos…</p>
+        </div>
+    </div>
+
+    <!-- Info section -->
+    <div class="info-section">
+        <div class="info-grid">
+            <div class="info-block">
+                <div class="info-block-icon">📈</div>
+                <h3>Indicadores en vivo</h3>
+                <p>Adultos registrados, certificados emitidos, tasa de completacion y promedio de evaluaciones por linea formativa.</p>
+            </div>
+            <div class="info-block">
+                <div class="info-block-icon">📋</div>
+                <h3>Registros detallados</h3>
+                <p>Tabla con nombre, grupo, region, curso y estado de cada adulto inscrito. Ordenable y filtrable.</p>
+            </div>
+            <div class="info-block">
+                <div class="info-block-icon">🎓</div>
+                <h3>Certificados emitidos</h3>
+                <p>Listado completo con codigo verificable, puntuacion y fecha de emision por curso.</p>
+            </div>
+            <div class="info-block">
+                <div class="info-block-icon">⬇️</div>
+                <h3>Exportacion CSV</h3>
+                <p>Descarga los registros y certificados de cada linea para reportes externos o respaldo.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>Asociación Scouts de Colombia</strong></p>
+        <p>Portal Administrativo - paneles de control por linea formativa</p>
+        <p style="margin-top: 12px; font-size: 0.85em;">© 2026 ASC. Todos los derechos reservados.</p>
+    </div>
+
+    <script>
+        (function() {
+            var CONFIG_URL = 'dashboards.json';
+
+            function escapeHtml(str) {
+                return String(str == null ? '' : str).replace(/[&<>"']/g, function(c) {
+                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+                });
+            }
+
+            function renderCard(linea) {
+                var isActive = linea.status === 'active';
+                var classes = ['linea-card'];
+                if (!isActive) classes.push('coming-soon');
+
+                // Color en el border-top según la línea
+                var borderColor = linea.color || '#B71C1C';
+
+                var metaHtml = '<div class="linea-meta">' +
+                    '<div class="linea-meta-item">' +
+                        '<span class="linea-meta-icon">👥</span>' +
+                        '<span><span class="linea-meta-label">Para:</span>' + escapeHtml(linea.audience) + '</span>' +
+                    '</div>';
+
+                if (isActive && linea.coursesActive != null) {
+                    var planned = linea.coursesPlanned ? ' · ' + linea.coursesPlanned + ' planeados' : '';
+                    metaHtml += '<div class="linea-meta-item">' +
+                        '<span class="linea-meta-icon">📚</span>' +
+                        '<span><span class="linea-meta-label">Estado:</span>' +
+                            linea.coursesActive + ' curso' + (linea.coursesActive === 1 ? '' : 's') + ' activo' + (linea.coursesActive === 1 ? '' : 's') + planned +
+                        '</span>' +
+                    '</div>';
+                }
+                metaHtml += '</div>';
+
+                var ctaHtml;
+                if (isActive && linea.url) {
+                    ctaHtml = '<a href="' + escapeHtml(linea.url) + '" class="linea-cta" target="_blank" rel="noopener">Abrir Panel →</a>';
+                } else {
+                    ctaHtml = '<span class="linea-cta disabled">Próximamente</span>';
+                }
+
+                return '<div class="' + classes.join(' ') + '" style="border-top-color: ' + escapeHtml(borderColor) + ';">' +
+                    '<div class="linea-icon">' + escapeHtml(linea.icon) + '</div>' +
+                    '<h3 class="linea-name">' + escapeHtml(linea.name) + '</h3>' +
+                    '<p class="linea-description">' + escapeHtml(linea.description) + '</p>' +
+                    metaHtml +
+                    ctaHtml +
+                '</div>';
+            }
+
+            function renderLineas(list) {
+                var grid = document.getElementById('lineasGrid');
+                if (!list || !list.length) {
+                    grid.innerHTML = '<p class="loading-msg">No hay paneles disponibles por ahora.</p>';
+                    return;
+                }
+                grid.innerHTML = list.map(renderCard).join('');
+            }
+
+            fetch(CONFIG_URL, { cache: 'no-cache' })
+                .then(function(r) {
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    return r.json();
+                })
+                .then(renderLineas)
+                .catch(function(err) {
+                    document.getElementById('lineasGrid').innerHTML =
+                        '<p class="error-msg">Error al cargar el catálogo: ' + escapeHtml(err.message) + '</p>';
+                });
+        })();
+    </script>
+    <script src="assets/theme-toggle.js"></script>
+</body>
+</html>

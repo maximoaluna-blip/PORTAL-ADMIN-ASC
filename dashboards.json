@@ -1,0 +1,50 @@
+[
+  {
+    "id": "politica-adultos",
+    "name": "Línea Política de Adultos",
+    "icon": "📜",
+    "description": "Panel administrativo de la Línea Política de Adultos en el Movimiento. Cursos sobre marco filosófico, ciclo del adulto, 7 competencias y plan personal.",
+    "audience": "5 cursos activos · backend compartido (token ADULTOS_ASC_2026)",
+    "url": "https://maximoaluna-blip.github.io/INDUCCION-ADULTOS/dashboard-admin.html",
+    "status": "active",
+    "coursesActive": 5,
+    "coursesPlanned": 12,
+    "color": "#622599"
+  },
+  {
+    "id": "desarrollo-institucional",
+    "name": "Línea Desarrollo Institucional",
+    "icon": "🏛️",
+    "description": "Panel administrativo de la Línea Desarrollo Institucional. Gobernanza, planeación, finanzas sanas, salud institucional y los 8 ámbitos de gestión PNDI 2017.",
+    "audience": "1 curso activo (piloto) · backend compartido con Línea Política de Adultos",
+    "url": "https://maximoaluna-blip.github.io/INDUCCION-DESARROLLO-INSTITUCIONAL/02-Plataforma-Web/dashboard-admin.html",
+    "status": "active",
+    "coursesActive": 1,
+    "coursesPlanned": 24,
+    "color": "#1565C0"
+  },
+  {
+    "id": "programa-jovenes",
+    "name": "Línea Programa de Jóvenes",
+    "icon": "🎒",
+    "description": "Panel administrativo de la Línea Programa de Jóvenes. Formación para adultos que dirigen las ramas: manada, tropa, comunidad y clan.",
+    "audience": "Por construir · sin cursos activos aún",
+    "url": null,
+    "status": "coming-soon",
+    "coursesActive": 0,
+    "coursesPlanned": null,
+    "color": "#FF9800"
+  },
+  {
+    "id": "politicas-transversales",
+    "name": "Línea Políticas Transversales",
+    "icon": "🛡️",
+    "description": "Panel administrativo de la Línea Políticas Transversales. A Salvo del Peligro, Diversidad e Inclusión, Gestión para la Motivación.",
+    "audience": "Por construir · sin cursos activos aún",
+    "url": null,
+    "status": "coming-soon",
+    "coursesActive": 0,
+    "coursesPlanned": null,
+    "color": "#4CAF50"
+  }
+]

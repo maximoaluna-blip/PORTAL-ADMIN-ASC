@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página no encontrada — Portal de Formación de Adultos ASC</title>
+    <meta name="robots" content="noindex">
+    <link rel="icon" type="image/svg+xml" href="/PORTAL-ADULTOS-ASC/assets/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>(function(){try{var t=localStorage.getItem('rover-theme');if(t==='dark'||(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.setAttribute('data-theme','dark');}}catch(e){}})();</script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --morado: #622599;
+            --amarillo: #FFE675;
+            --gris-bg: #f2f5f7;
+            --gris-card: #ffffff;
+            --gris-texto: #2c2927;
+            --gris-tenue: #636363;
+        }
+        [data-theme="dark"] {
+            --gris-bg: #1a1a1a;
+            --gris-card: #2a2a2a;
+            --gris-texto: #f0f0f0;
+            --gris-tenue: #b0b0b0;
+        }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--gris-bg);
+            min-height: 100vh;
+            color: var(--gris-texto);
+            display: flex;
+            flex-direction: column;
+        }
+        .top-bar {
+            background: var(--morado);
+            padding: 14px 0;
+        }
+        .top-bar-inner {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .top-bar img { height: 42px; }
+        .top-bar .separator {
+            width: 1px;
+            height: 35px;
+            background: rgba(255,255,255,0.3);
+        }
+        .main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+        }
+        .card {
+            background: var(--gris-card);
+            max-width: 600px;
+            width: 100%;
+            padding: 56px 40px;
+            text-align: center;
+            border-top: 6px solid var(--morado);
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(98, 37, 153, 0.12);
+        }
+        .code {
+            font-size: 5.5em;
+            font-weight: 800;
+            color: var(--morado);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .yellow-bar {
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--amarillo);
+            margin: 18px auto 24px;
+        }
+        h1 {
+            font-size: 1.5em;
+            color: var(--gris-texto);
+            margin-bottom: 14px;
+        }
+        p {
+            color: var(--gris-tenue);
+            margin-bottom: 28px;
+            line-height: 1.7;
+        }
+        .btn {
+            background: var(--morado);
+            color: #fff;
+            border: 2px solid var(--morado);
+            padding: 12px 28px;
+            font-size: 0.92em;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #3d1660; }
+        .footer {
+            background: #2c2927;
+            color: #fff;
+            padding: 24px 20px;
+            text-align: center;
+            font-size: 0.85em;
+        }
+        .footer p { opacity: 0.85; margin: 3px 0; }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="top-bar-inner">
+            <img src="/PORTAL-ADULTOS-ASC/assets/logo-asc.png" alt="ASC">
+            <div class="separator"></div>
+            <img src="/PORTAL-ADULTOS-ASC/assets/logo-vallescout.png" alt="Vallescout">
+        </div>
+    </div>
+    <main class="main">
+        <div class="card">
+            <div class="code">404</div>
+            <span class="yellow-bar"></span>
+            <h1>Esta página no existe</h1>
+            <p>La dirección que buscas no está disponible. Vuelve al portal y elige la línea de formación que necesitas.</p>
+            <a href="/PORTAL-ADULTOS-ASC/" class="btn">Volver al portal</a>
+        </div>
+    </main>
+    <div class="footer">
+        <p><strong>Asociación Scouts de Colombia</strong></p>
+        <p>Portal de Formación de Adultos en el Movimiento</p>
+    </div>
+</body>
+</html>
