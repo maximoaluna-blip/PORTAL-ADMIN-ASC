@@ -4,24 +4,40 @@
     "name": "Línea Política de Adultos",
     "icon": "📜",
     "description": "Panel administrativo de la Línea Política de Adultos en el Movimiento. Cursos sobre marco filosófico, ciclo del adulto, 7 competencias y plan personal.",
-    "audience": "5 cursos activos · backend compartido (token ADULTOS_ASC_2026)",
-    "url": "https://maximoaluna-blip.github.io/INDUCCION-ADULTOS/dashboard-admin.html",
+    "audience": "5 cursos activos · ruta de Nivel 1 desplegada",
+    "url": "dashboard.html?linea=politica-adultos",
     "status": "active",
     "coursesActive": 5,
     "coursesPlanned": 12,
-    "color": "#622599"
+    "color": "#622599",
+    "courseIds": [
+      "bienvenida-adultos",
+      "politica-marco",
+      "ciclo-adulto",
+      "competencias-esenciales",
+      "plan-personal",
+      "politica-adultos-v1"
+    ]
   },
   {
     "id": "desarrollo-institucional",
     "name": "Línea Desarrollo Institucional",
     "icon": "🏛️",
     "description": "Panel administrativo de la Línea Desarrollo Institucional. Gobernanza, planeación, finanzas sanas, salud institucional y los 8 ámbitos de gestión PNDI 2017.",
-    "audience": "1 curso activo (piloto) · backend compartido con Línea Política de Adultos",
-    "url": "https://maximoaluna-blip.github.io/INDUCCION-DESARROLLO-INSTITUCIONAL/02-Plataforma-Web/dashboard-admin.html",
+    "audience": "1 curso activo (piloto) · Nivel 1 en construcción",
+    "url": "dashboard.html?linea=desarrollo-institucional",
     "status": "active",
     "coursesActive": 1,
     "coursesPlanned": 24,
-    "color": "#1565C0"
+    "color": "#1565C0",
+    "courseIds": [
+      "bienvenida-desarrollo-institucional",
+      "politica-pndi",
+      "niveles-y-estructura",
+      "ocho-ambitos-de-gestion",
+      "salud-institucional",
+      "mi-aporte-al-di"
+    ]
   },
   {
     "id": "programa-jovenes",
@@ -33,7 +49,8 @@
     "status": "coming-soon",
     "coursesActive": 0,
     "coursesPlanned": null,
-    "color": "#FF9800"
+    "color": "#FF9800",
+    "courseIds": []
   },
   {
     "id": "politicas-transversales",
@@ -45,6 +62,7 @@
     "status": "coming-soon",
     "coursesActive": 0,
     "coursesPlanned": null,
-    "color": "#4CAF50"
+    "color": "#4CAF50",
+    "courseIds": []
   }
 ]

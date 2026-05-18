@@ -342,7 +342,11 @@
     <!-- Líneas -->
     <div class="container">
         <h2 class="section-title">Paneles administrativos</h2>
-        <p class="section-subtitle">Cada linea formativa tiene su propio panel administrativo con indicadores de inscripciones, completaciones, certificados y exportacion CSV.</p>
+        <p class="section-subtitle">Todas las lineas formativas comparten un mismo backend. Puedes ver indicadores filtrados por linea o de todas a la vez.</p>
+
+        <div style="text-align:center;margin-bottom:30px;">
+            <a href="dashboard.html" class="linea-cta" style="display:inline-block;padding:14px 32px;font-size:1em;">📊 Ver vista global (todas las líneas)</a>
+        </div>
 
         <div class="lineas-grid" id="lineasGrid">
             <p class="loading-msg">Cargando paneles administrativos…</p>
@@ -419,7 +423,10 @@
 
                 var ctaHtml;
                 if (isActive && linea.url) {
-                    ctaHtml = '<a href="' + escapeHtml(linea.url) + '" class="linea-cta" target="_blank" rel="noopener">Abrir Panel →</a>';
+                    // URLs internas (dashboard.html?linea=X) — no abrir en pestaña nueva
+                    var isInternal = linea.url.indexOf('http') !== 0;
+                    var targetAttrs = isInternal ? '' : ' target="_blank" rel="noopener"';
+                    ctaHtml = '<a href="' + escapeHtml(linea.url) + '" class="linea-cta"' + targetAttrs + '>Abrir Panel →</a>';
                 } else {
                     ctaHtml = '<span class="linea-cta disabled">Próximamente</span>';
                 }
