@@ -44,13 +44,21 @@
     "name": "Línea Programa de Jóvenes",
     "icon": "🎒",
     "description": "Panel administrativo de la Línea Programa de Jóvenes. Formación para adultos que dirigen las ramas: manada, tropa, comunidad y clan.",
-    "audience": "Por construir · sin cursos activos aún",
-    "url": null,
-    "status": "coming-soon",
-    "coursesActive": 0,
-    "coursesPlanned": null,
-    "color": "#FF9800",
-    "courseIds": []
+    "audience": "7 cursos activos · Nivel 1 completo",
+    "url": "dashboard.html?linea=programa-jovenes",
+    "status": "active",
+    "coursesActive": 7,
+    "coursesPlanned": 25,
+    "color": "#00afef",
+    "courseIds": [
+      "bienvenida-programa-jovenes",
+      "educacion-por-el-amor",
+      "como-se-educa-hoy",
+      "caracteristicas-esenciales-movimiento-scout",
+      "metodo-scout-8-elementos",
+      "pnpj-gran-juego-para-la-vida",
+      "mi-compromiso-programa-jovenes"
+    ]
   },
   {
     "id": "politicas-transversales",

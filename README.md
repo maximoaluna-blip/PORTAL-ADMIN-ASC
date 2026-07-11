@@ -10,7 +10,7 @@ Landing unificada de acceso a los paneles administrativos de las plataformas for
 |---|---|---|
 | 📜 Política de Adultos en el Movimiento | Activo | [Abrir](https://maximoaluna-blip.github.io/INDUCCION-ADULTOS/dashboard-admin.html) |
 | 🏛️ Desarrollo Institucional | Activo (piloto) | [Abrir](https://maximoaluna-blip.github.io/INDUCCION-DESARROLLO-INSTITUCIONAL/02-Plataforma-Web/dashboard-admin.html) |
-| 🎒 Programa de Jóvenes | Próximamente | — |
+| 🎒 Programa de Jóvenes | Activo (Nivel 1, 7 cursos) | [Abrir](https://maximoaluna-blip.github.io/PORTAL-ADMIN-ASC/dashboard.html?linea=programa-jovenes) |
 | 🛡️ Políticas Transversales | Próximamente | — |
 
 ## Notas de seguridad
