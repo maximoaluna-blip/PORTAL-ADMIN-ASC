@@ -44,10 +44,10 @@
     "name": "Línea Programa de Jóvenes",
     "icon": "🎒",
     "description": "Panel administrativo de la Línea Programa de Jóvenes. Formación para adultos que dirigen las ramas: manada, tropa, comunidad y clan.",
-    "audience": "7 cursos activos · Nivel 1 completo",
+    "audience": "8 cursos activos · Nivel 1 completo + Nivel 2 en marcha",
     "url": "dashboard.html?linea=programa-jovenes",
     "status": "active",
-    "coursesActive": 7,
+    "coursesActive": 8,
     "coursesPlanned": 25,
     "color": "#00afef",
     "courseIds": [
@@ -57,7 +57,8 @@
       "caracteristicas-esenciales-movimiento-scout",
       "metodo-scout-8-elementos",
       "pnpj-gran-juego-para-la-vida",
-      "mi-compromiso-programa-jovenes"
+      "mi-compromiso-programa-jovenes",
+      "rama-manada-lobatos"
     ]
   },
   {
