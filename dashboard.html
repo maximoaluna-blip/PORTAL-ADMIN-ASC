@@ -732,6 +732,18 @@ table tbody td {
     .loading-overlay, .toast { display: none !important; }
     body { background: #fff; }
 }
+
+/* Tasa de acierto del analisis de items (ADR-030).
+   Van aqui y no inline: es la regla de estilo derivada de ADR-025 — un `color:`
+   inline no se puede sobrescribir por tema y fue como se colaron 2 de los 5 bugs
+   de contraste de aquella auditoria.
+   Los 3 tonos estan medidos sobre blanco y pasan WCAG AA (>= 4.5:1):
+   #c62828 = 5.62:1 · #bf360c = 5.60:1 · #2e7d32 = 5.13:1.
+   El naranja de Material #ef6c00 daba 3.08:1 y NO pasaba. */
+.tasa { font-weight: 600; }
+.tasa-mala    { color: #c62828; }
+.tasa-regular { color: #bf360c; }
+.tasa-buena   { color: #2e7d32; }
     </style>
 </head>
 <body>
@@ -1406,14 +1418,14 @@ function renderItems() {
     items.forEach(function(it) {
         var tasa = it.tasaAcierto || 0;
         // <50% es un item que hay que mirar; >=80% va bien
-        var color = tasa < 50 ? '#c62828' : (tasa < 80 ? '#ef6c00' : '#2e7d32');
+        var clase = tasa < 50 ? 'tasa-mala' : (tasa < 80 ? 'tasa-regular' : 'tasa-buena');
         html += '<tr>' +
             '<td>' + escapeHtml(String(it.curso)) + '</td>' +
             '<td>' + escapeHtml(String(it.modulo)) + '</td>' +
             '<td>' + (isNaN(parseInt(it.pregunta, 10)) ? escapeHtml(String(it.pregunta)) : (parseInt(it.pregunta, 10) + 1)) + '</td>' +
             '<td>' + it.intentos + '</td>' +
             '<td>' + it.aciertos + '</td>' +
-            '<td style="color:' + color + ';font-weight:600">' + tasa + '%</td>' +
+            '<td class="tasa ' + clase + '">' + tasa + '%</td>' +
             '</tr>';
     });
     tbody.innerHTML = html;
