@@ -866,6 +866,42 @@ table tbody td {
             </div>
         </div>
 
+        <!-- Analisis de items: que pregunta falla la gente (ADR-030, Kirkpatrick nivel 2) -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Preguntas que mas se fallan</h2>
+                <span class="meta" id="itemsCount">sin datos</span>
+            </div>
+            <div class="section-body">
+                <p class="meta" style="margin-bottom:12px">
+                    Cuenta <strong>todos</strong> los intentos, incluidos los reprobados, y es
+                    an&oacute;nima: no dice qui&eacute;n fall&oacute;, dice qu&eacute; pregunta falla.
+                    Una tasa de acierto muy baja suele ser un &iacute;tem mal redactado o contenido
+                    que la lecci&oacute;n no alcanz&oacute; a ense&ntilde;ar. Una del 100&nbsp;% a la
+                    primera puede ser una pregunta regalada.
+                </p>
+                <div class="table-wrapper">
+                    <table id="itemsTable">
+                        <thead>
+                            <tr>
+                                <th>Curso</th>
+                                <th>M&oacute;dulo</th>
+                                <th>Pregunta</th>
+                                <th>Intentos</th>
+                                <th>Aciertos</th>
+                                <th>Tasa de acierto</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsBody"></tbody>
+                    </table>
+                </div>
+                <div class="no-data" id="itemsEmpty">
+                    <div class="no-data-icon">&#129513;</div>
+                    <div>A&uacute;n no hay intentos registrados</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Table: Ultimos Registros -->
         <div class="section">
             <div class="section-header">
@@ -1108,6 +1144,7 @@ function fetchData() {
                 registros: inner.registros || [],
                 certificados: inner.certificados || [],
                 modulos: inner.modulos || [],
+                items: inner.items || [],
                 resumen: inner.resumen || {
                     totalRovers: inner.totalUsers || 0,
                     totalCertificados: inner.totalCertificates || 0,
@@ -1237,6 +1274,7 @@ function applyFilters() {
 
     renderSummary();
     renderChart();
+    renderItems();
     renderRegistros();
     filterCerts(); // applies search + renders
 }
@@ -1323,14 +1361,62 @@ function renderChart() {
     var html = '';
     modules.forEach(function(m) {
         var pct = Math.round(((m.completados || 0) / max) * 100);
+        // Abandono: cuantos completaron la leccion anterior y no llegaron a esta.
+        // Lo calcula el backend (ADR-030); si viene de un despliegue viejo, no se pinta.
+        var caida = '';
+        if (m.abandonoPct > 0) {
+            caida = ' <span class="meta" style="color:#c62828" title="' + m.abandono +
+                    ' persona(s) completaron la leccion anterior y no llegaron a esta">&#8595;' +
+                    m.abandonoPct + '%</span>';
+        }
         html += '<div class="chart-row">' +
             '<div class="chart-label" title="' + escapeHtml(m.nombre) + '">' + escapeHtml(m.nombre) + '</div>' +
             '<div class="chart-bar-track"><div class="chart-bar-fill" style="width:' + pct + '%"><span>' + (pct >= 15 ? m.completados : '') + '</span></div></div>' +
-            '<div class="chart-bar-value">' + m.completados + '</div>' +
+            '<div class="chart-bar-value">' + m.completados + caida + '</div>' +
             '</div>';
     });
 
     container.innerHTML = html;
+}
+
+// --- Render Analisis de Items (ADR-030) ---
+function renderItems() {
+    var tbody = document.getElementById('itemsBody');
+    var emptyEl = document.getElementById('itemsEmpty');
+    var countEl = document.getElementById('itemsCount');
+    if (!tbody) return;
+
+    var items = state.data ? (state.data.items || []) : [];
+
+    var allowed = getAllowedCourseIds();
+    if (allowed) {
+        items = items.filter(function(it) { return allowed.indexOf(it.curso) !== -1; });
+    }
+
+    if (items.length === 0) {
+        tbody.innerHTML = '';
+        if (emptyEl) emptyEl.style.display = '';
+        if (countEl) countEl.textContent = 'sin datos';
+        return;
+    }
+    if (emptyEl) emptyEl.style.display = 'none';
+    if (countEl) countEl.textContent = items.length + ' pregunta(s) con intentos';
+
+    var html = '';
+    items.forEach(function(it) {
+        var tasa = it.tasaAcierto || 0;
+        // <50% es un item que hay que mirar; >=80% va bien
+        var color = tasa < 50 ? '#c62828' : (tasa < 80 ? '#ef6c00' : '#2e7d32');
+        html += '<tr>' +
+            '<td>' + escapeHtml(String(it.curso)) + '</td>' +
+            '<td>' + escapeHtml(String(it.modulo)) + '</td>' +
+            '<td>' + (parseInt(it.pregunta, 10) + 1) + '</td>' +
+            '<td>' + it.intentos + '</td>' +
+            '<td>' + it.aciertos + '</td>' +
+            '<td style="color:' + color + ';font-weight:600">' + tasa + '%</td>' +
+            '</tr>';
+    });
+    tbody.innerHTML = html;
 }
 
 // --- Render Registros ---
