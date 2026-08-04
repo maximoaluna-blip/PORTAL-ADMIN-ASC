@@ -167,7 +167,13 @@
             box-shadow: 0 8px 24px rgba(98, 37, 153, 0.15);
         }
         .linea-card.coming-soon {
-            opacity: 0.78;
+            /* Sin `opacity`: la opacidad del contenedor tambien compone el TEXTO contra
+               el fondo, y dejaba .linea-description en 3.72:1 en tema claro — por debajo
+               del 4.5:1 de WCAG AA. Es el mismo fallo que el `.achievement` con opacity
+               del ADR-025. El efecto de "secundario" lo dan el fondo apagado y la
+               insignia "Proximamente", sin tocar la legibilidad. */
+            background: var(--gris-bg);
+            box-shadow: none;
         }
         .linea-card.coming-soon::before {
             content: 'Próximamente';
