@@ -1410,7 +1410,7 @@ function renderItems() {
         html += '<tr>' +
             '<td>' + escapeHtml(String(it.curso)) + '</td>' +
             '<td>' + escapeHtml(String(it.modulo)) + '</td>' +
-            '<td>' + (parseInt(it.pregunta, 10) + 1) + '</td>' +
+            '<td>' + (isNaN(parseInt(it.pregunta, 10)) ? escapeHtml(String(it.pregunta)) : (parseInt(it.pregunta, 10) + 1)) + '</td>' +
             '<td>' + it.intentos + '</td>' +
             '<td>' + it.aciertos + '</td>' +
             '<td style="color:' + color + ';font-weight:600">' + tasa + '%</td>' +
