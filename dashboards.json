@@ -46,7 +46,7 @@
     "audience": "8 cursos activos · Nivel 1 completo + Nivel 2 en marcha",
     "url": "dashboard.html?linea=programa-jovenes",
     "status": "active",
-    "coursesActive": 8,
+    "coursesActive": 9,
     "coursesPlanned": 25,
     "color": "#00afef",
     "courseIds": [
@@ -57,7 +57,8 @@
       "metodo-scout-8-elementos",
       "pnpj-gran-juego-para-la-vida",
       "mi-compromiso-programa-jovenes",
-      "rama-manada-lobatos"
+      "rama-manada-lobatos",
+      "rama-familia-cachorros"
     ]
   },
   {
