@@ -46,7 +46,7 @@
     "audience": "8 cursos activos · Nivel 1 completo + Nivel 2 en marcha",
     "url": "dashboard.html?linea=programa-jovenes",
     "status": "active",
-    "coursesActive": 11,
+    "coursesActive": 12,
     "coursesPlanned": 25,
     "color": "#00afef",
     "courseIds": [
@@ -60,7 +60,8 @@
       "rama-manada-lobatos",
       "rama-familia-cachorros",
       "rama-tropa-scout",
-      "rama-comunidad-nomadas"
+      "rama-comunidad-nomadas",
+      "rama-clan-rovers"
     ]
   },
   {
