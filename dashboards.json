@@ -46,7 +46,7 @@
     "audience": "8 cursos activos · Nivel 1 completo + Nivel 2 en marcha",
     "url": "dashboard.html?linea=programa-jovenes",
     "status": "active",
-    "coursesActive": 9,
+    "coursesActive": 10,
     "coursesPlanned": 25,
     "color": "#00afef",
     "courseIds": [
@@ -58,7 +58,8 @@
       "pnpj-gran-juego-para-la-vida",
       "mi-compromiso-programa-jovenes",
       "rama-manada-lobatos",
-      "rama-familia-cachorros"
+      "rama-familia-cachorros",
+      "rama-tropa-scout"
     ]
   },
   {
