@@ -75,12 +75,13 @@
     "audience": "Por construir · sin cursos activos aún",
     "url": "dashboard.html?linea=politicas-transversales",
     "status": "active",
-    "coursesActive": 2,
+    "coursesActive": 3,
     "coursesPlanned": 22,
     "color": "#2E7D32",
     "courseIds": [
       "adulto-garante-entorno-seguro",
-      "bienvenida-politicas-transversales"
+      "bienvenida-politicas-transversales",
+      "entornos-seguros-politica-asp"
     ]
   }
 ]
