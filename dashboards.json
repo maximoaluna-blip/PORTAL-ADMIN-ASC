@@ -76,7 +76,7 @@
     "url": null,
     "status": "coming-soon",
     "coursesActive": 0,
-    "coursesPlanned": null,
+    "coursesPlanned": 22,
     "color": "#4CAF50",
     "courseIds": []
   }
