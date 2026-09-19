@@ -72,16 +72,17 @@
     "name": "Línea Políticas Transversales",
     "icon": "🛡️",
     "description": "Panel administrativo de la Línea Políticas Transversales. A Salvo del Peligro, Diversidad e Inclusión, Gestión para la Motivación.",
-    "audience": "Por construir · sin cursos activos aún",
+    "audience": "Toda persona adulta vinculada a la ASC",
     "url": "dashboard.html?linea=politicas-transversales",
     "status": "active",
-    "coursesActive": 3,
+    "coursesActive": 4,
     "coursesPlanned": 22,
     "color": "#2E7D32",
     "courseIds": [
       "adulto-garante-entorno-seguro",
       "bienvenida-politicas-transversales",
-      "entornos-seguros-politica-asp"
+      "entornos-seguros-politica-asp",
+      "gestion-para-la-motivacion"
     ]
   }
 ]
