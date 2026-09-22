@@ -378,6 +378,16 @@ body {
     margin-top: 4px;
 }
 
+.summary-card .card-note {
+    font-size: 0.72em;
+    color: #999;
+    font-weight: 400;
+    margin-top: 6px;
+    line-height: 1.35;
+    position: relative;
+    z-index: 1;
+}
+
 .summary-card .card-bg {
     position: absolute;
     right: -10px;
@@ -862,6 +872,9 @@ table tbody td {
                 <div class="card-icon">&#128200;</div>
                 <div class="card-value" id="completionRate">0%</div>
                 <div class="card-label">Tasa de Completacion</div>
+                <!-- Un porcentaje solo se puede auditar si se ven las dos cifras
+                     de las que sale (ADR-079). Vacio hasta que lleguen datos. -->
+                <div class="card-note" id="completionNote"></div>
                 <div class="card-bg">&#128200;</div>
             </div>
             <div class="summary-card">
@@ -1237,10 +1250,18 @@ function fetchData() {
                 certificados: inner.certificados || [],
                 modulos: inner.modulos || [],
                 items: inner.items || [],
+                // Respaldo para un despliegue anterior al ADR-079, que no manda
+                // `resumen`. NO se recalcula `certificados / registros`: esa es
+                // justo la division que publicaba 105 %. Si el payload trae
+                // detalle se cuentan las inscripciones completadas; si no, la tasa
+                // queda en null y la tarjeta pinta un guion.
                 resumen: inner.resumen || {
                     totalRovers: inner.totalUsers || 0,
                     totalCertificados: inner.totalCertificates || 0,
-                    tasaCompletacion: (inner.totalUsers > 0 ? Math.round((inner.totalCertificates / inner.totalUsers) * 100) : 0),
+                    inscripciones: (inner.registros || []).length,
+                    inscripcionesCompletadas: contarCompletadas(inner.registros),
+                    tasaCompletacion: tasaDe(inner.registros),
+                    certificadosSinInscripcion: null,
                     promedioPuntuacion: inner.averageScore || 0
                 },
                 _rawAggregates: inner,  // por si luego queremos usar courseStats, etc.
@@ -1266,6 +1287,29 @@ function fetchData() {
         .finally(function() {
             showLoading(false);
         });
+}
+
+// --- Tasa de completacion (ADR-079) ----------------------------------------
+// Una inscripcion es un par persona+curso: una fila de `Registros`. La tasa es
+// cuantas de esas inscripciones llegaron al certificado, y por eso no puede pasar
+// del 100 %. Lo que habia aqui -y en el backend- era `certificados / registros`,
+// una division que cruza cursos: quien termina tres cursos suma tres arriba y uno
+// abajo. El 21-sep-2026 esta pagina publicaba 105 %.
+// El servidor manda ya la cifra buena en `resumen`; estas funciones son para
+// cuando hay filtros puestos, que el servidor no conoce.
+function esNumero(v) {
+    return typeof v === 'number' && isFinite(v);
+}
+
+function contarCompletadas(registros) {
+    return (registros || []).filter(function(r) { return r.estado === 'Completado'; }).length;
+}
+
+// Devuelve null -no 0- cuando no hay inscripciones que contar: un 0 % afirma que
+// nadie termino, y eso no es lo mismo que no saberlo (la distincion del ADR-078).
+function tasaDe(registros) {
+    if (!registros || !registros.length) return null;
+    return Math.round((contarCompletadas(registros) / registros.length) * 100);
 }
 
 // ADR-078: una tabla vacia significa dos cosas muy distintas -- que no hay nadie,
@@ -1409,7 +1453,13 @@ function renderSummary() {
 
     var totalRovers = state.filteredRegistros.length;
     var totalCerts = state.filteredCerts.length;
-    var rate = totalRovers > 0 ? Math.round((totalCerts / totalRovers) * 100) : 0;
+
+    // Sobre inscripciones, tambien al filtrar (ADR-079): el numerador y el
+    // denominador tienen que ser el mismo conjunto de pares persona+curso.
+    var inscripciones = state.filteredRegistros.length;
+    var completadas = contarCompletadas(state.filteredRegistros);
+    var rate = tasaDe(state.filteredRegistros);
+    var huerfanos = null;
 
     var scores = state.filteredCerts.map(function(c) { return parseFloat(c.puntuacion) || 0; });
     var avg = scores.length > 0 ? (scores.reduce(function(a, b) { return a + b; }, 0) / scores.length).toFixed(1) : '0';
@@ -1421,17 +1471,65 @@ function renderSummary() {
                         document.getElementById('filterDateFrom').value ||
                         document.getElementById('filterDateTo').value;
 
+    // Sin filtros mandan los totales del servidor, que ve las hojas enteras y no
+    // solo lo que llego al navegador. `||` no servia aqui: se traga un 0 legitimo
+    // -cero certificados, tasa 0 %- y lo sustituye por la cuenta local, que con el
+    // detalle cerrado (ADR-078) es 0 de todas formas pero por otra razon.
+    // Un `resumen` que trae `tasaCompletacion` pero NO `inscripciones` viene de un
+    // despliegue anterior al ADR-079: ese porcentaje es la division vieja, la que
+    // daba 105 %, y no se pinta. Es la trampa que BACKEND.md lleva meses avisando
+    // -el codigo subido no es el codigo desplegado- dicha por el propio panel, que
+    // es quien puede verla. Subir esta pagina antes de promover el Apps Script deja
+    // un guion y una explicacion, nunca una cifra imposible.
+    var tasaVieja = false;
     if (!filtersActive && data.resumen) {
-        totalRovers = data.resumen.totalRovers || totalRovers;
-        totalCerts = data.resumen.totalCertificados || totalCerts;
-        rate = data.resumen.tasaCompletacion || rate;
-        avg = data.resumen.promedioPuntuacion || avg;
+        var r = data.resumen;
+        if (esNumero(r.totalRovers)) totalRovers = r.totalRovers;
+        if (esNumero(r.totalCertificados)) totalCerts = r.totalCertificados;
+        if (esNumero(r.promedioPuntuacion) || r.promedioPuntuacion) avg = r.promedioPuntuacion;
+
+        if (esNumero(r.inscripciones) && esNumero(r.tasaCompletacion)) {
+            rate = r.tasaCompletacion;
+            inscripciones = r.inscripciones;
+            if (esNumero(r.inscripcionesCompletadas)) completadas = r.inscripcionesCompletadas;
+            if (esNumero(r.certificadosSinInscripcion)) huerfanos = r.certificadosSinInscripcion;
+        } else if (esNumero(r.tasaCompletacion)) {
+            tasaVieja = true;
+            rate = null;
+        }
     }
 
     animateValue('totalRovers', totalRovers);
     animateValue('totalCerts', totalCerts);
-    document.getElementById('completionRate').textContent = rate + '%';
+    document.getElementById('completionRate').textContent = (rate === null ? '—' : rate + '%');
     document.getElementById('avgScore').textContent = avg;
+    document.getElementById('completionNote').textContent =
+        textoTasa(rate, completadas, inscripciones, huerfanos, tasaVieja);
+}
+
+// El pie de la tarjeta: de que dos cifras sale el porcentaje, y -si los hay- los
+// certificados que no tienen inscripcion detras. Esos siete de veintiuno eran los
+// que inflaban el numerador hasta el 105 %; ahora no cuentan, pero tampoco se
+// esconden: son el sintoma de que alguien certifica sin pasar por el registro.
+function textoTasa(rate, completadas, inscripciones, huerfanos, tasaVieja) {
+    if (rate === null) {
+        if (tasaVieja) {
+            return 'El backend todavia sirve la formula anterior (certificados / registros), '
+                 + 'la que daba 105 %. Promueve el despliegue del Apps Script para ver la tasa.';
+        }
+        if (state.data && state.data._sinDetalle) {
+            return 'Con un filtro puesto la tasa se calcula aqui, y para eso hace falta '
+                 + 'el detalle: reconecta con la clave de administracion.';
+        }
+        return 'Sin inscripciones que contar.';
+    }
+    var txt = completadas + ' de ' + inscripciones + ' inscripciones con certificado';
+    if (huerfanos) {
+        txt += ' · ' + huerfanos + (huerfanos === 1
+            ? ' certificado sin inscripcion que lo respalde'
+            : ' certificados sin inscripcion que los respalde');
+    }
+    return txt;
 }
 
 function animateValue(id, target) {

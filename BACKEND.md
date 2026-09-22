@@ -95,7 +95,10 @@ Respuesta esperada (parche `handleStats con arrays detallados`):
     "resumen": {
       "totalRovers": 6,
       "totalCertificados": 2,
+      "inscripciones": 6,
+      "inscripcionesCompletadas": 2,
       "tasaCompletacion": 33,
+      "certificadosSinInscripcion": 0,
       "promedioPuntuacion": 100
     },
     "generatedAt": "2026-05-17T..."
@@ -104,6 +107,8 @@ Respuesta esperada (parche `handleStats con arrays detallados`):
 ```
 
 Si el endpoint NO devuelve los arrays detallados (`registros`, `certificados`, `modulos`, `resumen`), el dashboard solo mostrará los KPIs y dejará las tablas y el gráfico vacíos. **Eso indica que el deployment del Apps Script tiene código viejo.**
+
+> ⚠️ **`tasaCompletacion` se mide por INSCRIPCIONES desde el ADR-079** (21-sep-2026): `inscripcionesCompletadas / inscripciones`, contando el par **persona+curso**. Antes era `totalCertificates / totalUsers` y el panel llegó a publicar **105 %**, porque quien termina tres cursos suma tres al numerador y uno al denominador. **El panel no se fía de un `resumen` que traiga `tasaCompletacion` pero no `inscripciones`**: ese viene de un despliegue anterior y su porcentaje es el viejo, así que pinta **«—»** y dice que hay que promover el Apps Script. `certificadosSinInscripcion` cuenta los certificados que no tienen inscripción detrás — el 21-sep-2026 eran **7 de 21** —: no entran en la tasa, pero se dicen.
 
 > ⚠️ **`totalCommitments` ya no existe en el payload** (hallazgo C4 de la auditoría del 20-sep-2026). El campo se publicaba y era **0 estructural**: el compromiso de cierre de cada curso se guarda solo en `localStorage` del navegador y ningún curso envía `action=commitment`, así que la métrica afirmaba un dato que nadie alimentaba. El dashboard **nunca la pintó** —sus cuatro KPIs salen de `resumen`—, así que retirarla no cambia nada de lo que se ve.
 
@@ -159,11 +164,12 @@ reconectar el panel con la nueva; las anteriores dejan de funcionar al instante.
 
 **Cómo se comprueba:**
 
-1. `node probar-stats.js` (en `INDUCCION-ADULTOS/05-Generador-Cursos/`) — 22 comprobaciones
+1. `node probar-stats.js` (en `INDUCCION-ADULTOS/05-Generador-Cursos/`) — 28 comprobaciones
    locales, sin red: el GET público no puede traer un nombre, un correo, un grupo ni un
    código de certificado.
 2. `node verificar-backend.js` — su Paso 4 llama al endpoint de producción **sin clave** y
-   falla si vuelve con gente dentro.
+   falla si vuelve con gente dentro. Su **Paso 6** falla si la tasa de completación que sirve
+   producción sigue siendo la división vieja, o si pasa del 100 % (ADR-079).
 
 ---
 
