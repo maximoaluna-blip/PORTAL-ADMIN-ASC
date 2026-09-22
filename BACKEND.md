@@ -77,7 +77,6 @@ Respuesta esperada (parche `handleStats con arrays detallados`):
     "totalUsers": 6,
     "totalCertificates": 2,
     "totalQuizzes": 12,
-    "totalCommitments": 0,
     "completionsByModule": { ... },
     "courseStats": { ... },
     "averageScore": 100,
@@ -96,6 +95,8 @@ Respuesta esperada (parche `handleStats con arrays detallados`):
 ```
 
 Si el endpoint NO devuelve los arrays detallados (`registros`, `certificados`, `modulos`, `resumen`), el dashboard solo mostrará los KPIs y dejará las tablas y el gráfico vacíos. **Eso indica que el deployment del Apps Script tiene código viejo.**
+
+> ⚠️ **`totalCommitments` ya no existe en el payload** (hallazgo C4 de la auditoría del 20-sep-2026). El campo se publicaba y era **0 estructural**: el compromiso de cierre de cada curso se guarda solo en `localStorage` del navegador y ningún curso envía `action=commitment`, así que la métrica afirmaba un dato que nadie alimentaba. El dashboard **nunca la pintó** —sus cuatro KPIs salen de `resumen`—, así que retirarla no cambia nada de lo que se ve.
 
 ---
 
