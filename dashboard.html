@@ -373,14 +373,19 @@ body {
 
 .summary-card .card-label {
     font-size: 0.85em;
-    color: #888;
+    /* #888 daba 3.54:1, por debajo del 4.5:1 de AA, desde antes de que esta
+       tarjeta tuviera pie. Igualado al gris de la casa por la misma razon. */
+    color: #636363;
     font-weight: 500;
     margin-top: 4px;
 }
 
 .summary-card .card-note {
     font-size: 0.72em;
-    color: #999;
+    /* #636363, no #999: sobre blanco son 6.01:1 contra los 2.85:1 de aquel, y
+       AA pide 4.5:1 para texto normal. La compuerta de a11y NO lo habria visto
+       -audita el panel sin conectar, con las tarjetas tapadas por el modal-. */
+    color: #636363;
     font-weight: 400;
     margin-top: 6px;
     line-height: 1.35;
@@ -796,7 +801,7 @@ table tbody td {
         <div class="input-group">
             <label for="adminKey">Clave de administracion <span style="font-weight:400;opacity:.7">(opcional)</span></label>
             <input type="password" id="adminKey" placeholder="Solo para ver nombres y certificados" autocomplete="off">
-            <p style="font-size:.82rem;opacity:.75;margin:.5rem 0 0">
+            <p style="font-size:.82rem;color:#636363;margin:.5rem 0 0">
                 Sin ella el panel funciona y muestra los totales, pero no los datos de las
                 personas. Es la clave <code>ADMIN_KEY</code> de las propiedades del script;
                 se guarda solo en este navegador y nunca viaja en una URL.
