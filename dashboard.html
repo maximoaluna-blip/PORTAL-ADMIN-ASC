@@ -783,6 +783,15 @@ table tbody td {
             <label for="gasUrl">URL de Google Apps Script</label>
             <input type="url" id="gasUrl" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off">
         </div>
+        <div class="input-group">
+            <label for="adminKey">Clave de administracion <span style="font-weight:400;opacity:.7">(opcional)</span></label>
+            <input type="password" id="adminKey" placeholder="Solo para ver nombres y certificados" autocomplete="off">
+            <p style="font-size:.82rem;opacity:.75;margin:.5rem 0 0">
+                Sin ella el panel funciona y muestra los totales, pero no los datos de las
+                personas. Es la clave <code>ADMIN_KEY</code> de las propiedades del script;
+                se guarda solo en este navegador y nunca viaja en una URL.
+            </p>
+        </div>
         <button class="btn-primary" id="btnConnect" onclick="connect()">Conectar</button>
         <div class="setup-error" id="setupError"></div>
     </div>
@@ -939,7 +948,7 @@ table tbody td {
                 </div>
                 <div class="no-data" id="registrosEmpty">
                     <div class="no-data-icon">&#128196;</div>
-                    <div>No hay registros disponibles</div>
+                    <div id="registrosEmptyText">No hay registros disponibles</div>
                 </div>
             </div>
         </div>
@@ -972,7 +981,7 @@ table tbody td {
                 </div>
                 <div class="no-data" id="certsEmpty">
                     <div class="no-data-icon">&#127891;</div>
-                    <div>No hay certificados emitidos</div>
+                    <div id="certsEmptyText">No hay certificados emitidos</div>
                 </div>
             </div>
         </div>
@@ -986,8 +995,17 @@ table tbody td {
    ============================================ */
 
 // --- State ---
+// Token del backend. Es PUBLICO por construccion -- viaja en el HTML de los 32
+// cursos publicados-- y por eso no protege nada: solo abre la puerta de `doPost`.
+// El que protege el padron es `adminKey`, que no esta en este archivo (ADR-078).
+var BACKEND_TOKEN = 'ADULTOS_ASC_2026';
+
 let state = {
     url: localStorage.getItem('dashboard_gas_url') || '',
+    // Clave de administracion. Vive SOLO en el navegador de quien administra: este
+    // panel es una pagina estatica y publica, asi que hornearla aqui seria dejarla
+    // a la vista de cualquiera que lea el JavaScript (ADR-078).
+    adminKey: localStorage.getItem('dashboard_admin_key') || '',
     data: null,
     filteredRegistros: [],
     filteredCerts: [],
@@ -1119,6 +1137,16 @@ function connect() {
     errorEl.style.display = 'none';
     state.url = url;
     localStorage.setItem('dashboard_gas_url', url);
+
+    var keyInput = document.getElementById('adminKey');
+    var key = keyInput ? keyInput.value.trim() : '';
+    state.adminKey = key;
+    if (key) {
+        localStorage.setItem('dashboard_admin_key', key);
+    } else {
+        localStorage.removeItem('dashboard_admin_key');
+    }
+
     showDashboard();
     fetchData();
 }
@@ -1128,8 +1156,48 @@ function disconnect() {
     state.url = '';
     state.data = null;
     localStorage.removeItem('dashboard_gas_url');
+    localStorage.removeItem('dashboard_admin_key');
+    state.adminKey = '';
     document.getElementById('gasUrl').value = '';
+    var keyInput = document.getElementById('adminKey');
+    if (keyInput) keyInput.value = '';
     showSetup();
+}
+
+// --- Pedir las estadisticas (ADR-078) ---
+// Con clave va por POST: asi la clave NO acaba en una URL, donde quedaria en los
+// registros del servidor y en el historial. `text/plain` y no `application/json`
+// a proposito: con JSON el navegador manda antes una peticion OPTIONS de preflight
+// que Apps Script no contesta. El backend lee `e.postData.contents` igual.
+function pedirStats(conClave) {
+    var peticion;
+    if (conClave) {
+        peticion = fetch(state.url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+                token: BACKEND_TOKEN,
+                action: 'stats',
+                adminKey: state.adminKey
+            })
+        });
+    } else {
+        var fetchUrl = state.url + (state.url.includes('?') ? '&' : '?') + 'action=stats&t=' + Date.now();
+        peticion = fetch(fetchUrl);
+    }
+    return peticion
+        .then(function(response) {
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            return response.json();
+        })
+        .then(function(data) {
+            // Un `success: false` es un rechazo del backend, no una respuesta vacia:
+            // si se deja pasar, el panel pinta cero personas como si no hubiera nadie.
+            if (data && data.success === false) {
+                throw new Error(data.error || 'El backend respondio con error.');
+            }
+            return data;
+        });
 }
 
 // --- Fetch Data ---
@@ -1139,12 +1207,24 @@ function fetchData() {
     setConnectionStatus('loading');
     showLoading(true);
 
-    var fetchUrl = state.url + (state.url.includes('?') ? '&' : '?') + 'action=stats&t=' + Date.now();
+    // ADR-078. El detalle identificado -- nombres, grupos, regiones, codigos de
+    // certificado -- ya no viaja en el GET publico: hay que pedirlo por POST con la
+    // clave de administracion. Sin clave el panel sigue funcionando y muestra los
+    // totales; las tablas de detalle quedan vacias y DICEN por que.
+    var conClave = !!state.adminKey;
+    state.detalleRechazado = false;
+    state.motivoRechazo = '';
 
-    fetch(fetchUrl)
-        .then(function(response) {
-            if (!response.ok) throw new Error('HTTP ' + response.status);
-            return response.json();
+    pedirStats(conClave)
+        .catch(function(err) {
+            // Si fallo llevando clave, reintentar sin ella: mas vale un panel con
+            // los totales que un panel en blanco. Pero hay que RECORDAR que se
+            // intento, o el panel acaba culpando a quien si mando la clave.
+            if (!conClave) throw err;
+            state.detalleRechazado = true;
+            state.motivoRechazo = err.message;
+            conClave = false;
+            return pedirStats(false);
         })
         .then(function(data) {
             // Apps Script envuelve en {success, data, error}. Desempaquetar.
@@ -1163,14 +1243,20 @@ function fetchData() {
                     tasaCompletacion: (inner.totalUsers > 0 ? Math.round((inner.totalCertificates / inner.totalUsers) * 100) : 0),
                     promedioPuntuacion: inner.averageScore || 0
                 },
-                _rawAggregates: inner  // por si luego queremos usar courseStats, etc.
+                _rawAggregates: inner,  // por si luego queremos usar courseStats, etc.
+                // Vacio no es lo mismo que "no hay nadie": distinguirlo (ADR-078).
+                _sinDetalle: (inner.detalleIncluido === false) || !conClave
             };
             setConnectionStatus('connected');
             populateFilters();
             applyFilters();
             updateLastRefresh();
             resetCountdown();
-            showToast('Datos actualizados correctamente', 'success');
+            if (state.detalleRechazado) {
+                showToast('Totales actualizados, pero el backend rechazo la clave: ' + state.motivoRechazo, 'error');
+            } else {
+                showToast('Datos actualizados correctamente', 'success');
+            }
         })
         .catch(function(err) {
             setConnectionStatus('error');
@@ -1180,6 +1266,22 @@ function fetchData() {
         .finally(function() {
             showLoading(false);
         });
+}
+
+// ADR-078: una tabla vacia significa dos cosas muy distintas -- que no hay nadie,
+// o que el backend no nos dejo verlo. Un cero sin explicar se lee como "limpio".
+function textoTablaVacia(que) {
+    if (state.detalleRechazado) {
+        return 'El detalle esta oculto: el backend rechazo la clave de administracion ('
+             + (state.motivoRechazo || 'sin detalle') + '). Reconecta con la clave correcta '
+             + 'para ver ' + que + '.';
+    }
+    if (state.data && state.data._sinDetalle) {
+        return 'El detalle esta oculto: el backend solo entrego los totales porque este '
+             + 'panel no envio la clave de administracion. Reconecta e ingresala para ver '
+             + que + '.';
+    }
+    return que === 'los registros' ? 'No hay registros disponibles' : 'No hay certificados emitidos';
 }
 
 // --- Connection Indicator ---
@@ -1455,6 +1557,7 @@ function renderRegistros() {
         tbody.innerHTML = '';
         table.style.display = 'none';
         emptyEl.style.display = 'block';
+        document.getElementById('registrosEmptyText').textContent = textoTablaVacia('los registros');
         countEl.textContent = '0 registros';
         return;
     }
@@ -1515,6 +1618,7 @@ function filterCerts() {
         tbody.innerHTML = '';
         table.style.display = 'none';
         emptyEl.style.display = 'block';
+        document.getElementById('certsEmptyText').textContent = textoTablaVacia('los certificados');
         countEl.textContent = '0 certificados';
         return;
     }
@@ -1686,6 +1790,9 @@ function todayStr() {
 
 // --- Keyboard shortcut: Enter to connect ---
 document.getElementById('gasUrl').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') connect();
+});
+document.getElementById('adminKey').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') connect();
 });
 </script>

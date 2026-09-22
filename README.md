@@ -48,7 +48,7 @@ PORTAL-ADMIN-ASC/
 
 - Cada dashboard requiere la URL del Google Apps Script (se ingresa una vez y queda guardada en `localStorage` del navegador).
 - El backend de las líneas activas está compartido durante el piloto (mismo token `ADULTOS_ASC_2026`). Los registros se diferencian por `courseId` — por eso un `courseIds` desactualizado en `dashboards.json` es un bug silencioso, no solo cosmético.
-- El endpoint `?action=stats` hoy es público (sin token). Mitigación y mejora futura sugerida en `BACKEND.md` §7.
+- El endpoint `?action=stats` es público, pero desde el **21-sep-2026 (ADR-078) ya no identifica a nadie**: devuelve **solo agregados**. Los nombres y los certificados se piden por **POST** con una clave de administración que vive en las propiedades del script — **no en este repositorio**, que es público — y que el panel pide al conectar. Sin clave el panel funciona y muestra los totales. Detalle en `BACKEND.md` §7.
 
 ---
 

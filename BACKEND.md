@@ -26,10 +26,19 @@ El usuario administrador, al abrir el dashboard por primera vez, debe **introduc
 
 ```
 dashboard.html
-  → en init: lee localStorage['dashboard_gas_url']
-  → si está vacío: muestra pantalla de "Conectar"
-  → si existe: hace GET <url>?action=stats
+  → en init: lee localStorage['dashboard_gas_url'] y localStorage['dashboard_admin_key']
+  → si no hay URL: muestra pantalla de "Conectar"
+  → con clave:  POST <url>  {token, action:'stats', adminKey}   → agregados + detalle
+  → sin clave:  GET  <url>?action=stats                          → solo agregados
 ```
+
+Desde el **ADR-078** la clave de administración es **opcional**: sin ella el panel funciona
+y muestra los totales, y las tablas de personas quedan vacías **diciendo por qué**. Si el
+backend la rechaza, el panel reintenta sin ella y lo avisa, en vez de quedarse en blanco.
+
+⚠️ La clave se guarda **solo en el navegador de quien administra** y va por **POST**, nunca
+en la URL. Este panel es una página estática y pública: hornear la clave en su HTML habría
+sido dejarla a la vista de cualquiera que lea su JavaScript.
 
 El endpoint devuelve los datos agregados + arrays detallados, y el dashboard:
 
@@ -126,15 +135,35 @@ Cualquier cambio a `dashboards.json` se refleja en el dashboard al siguiente ref
 
 ## 7. Seguridad
 
-⚠️ **Punto a mejorar:** el endpoint `?action=stats` actualmente es público (sin token de auth). Cualquiera con la URL podría leer los registros (nombres, emails, grupos).
+**Cerrado el 21-sep-2026 — ADR-078.** `?action=stats` entregaba `registros[]` con nombre,
+correo, grupo, región y curso de **todas** las personas inscritas a quien tuviera la URL del
+deployment — y esa URL viaja en el HTML publicado de los 32 cursos. Hoy el GET público
+devuelve **solo agregados**; el detalle va por **POST** con `adminKey`.
 
-**Mitigación actual:** la URL no está indexada ni difundida públicamente, solo se comparte entre admins.
+⚠️ **La mejora que este documento proponía durante meses no habría cerrado nada.** Decía
+«validar `params.token === AUTH_TOKEN`», y `AUTH_TOKEN` está impreso en el HTML de cada
+curso publicado: cualquiera que abra el código fuente de una página lo tiene. Por eso la
+clave nueva es **otra**, y vive donde el público no llega.
 
-**Mejora futura sugerida:** agregar validación de token al GET en el Apps Script (similar al que ya tiene el POST). Cuando se haga:
+**Dónde vive `ADMIN_KEY`:** en el editor de Apps Script → *Configuración del proyecto* →
+*Propiedades del script*. No está en ningún repositorio. Si no se configura, el detalle
+**no se sirve**: el código falla cerrado, así que desplegarlo cierra la fuga aunque después
+no se configure nada.
 
-1. Modificar `handleStats()` en `google-apps-script.js` para validar `params.token === AUTH_TOKEN`.
-2. Modificar `dashboard.html` para pedir el token junto a la URL al conectar (guardarlo en localStorage también).
-3. Push y verificar con `verificar-backend.js`.
+**Lo que esto SÍ hace:** deja de entregar el padrón a quien solo tiene una URL pública.
+**Lo que NO hace:** autenticación de verdad. Quien tenga la clave la tiene; no hay usuarios,
+ni caducidad, ni registro de quién consultó. Eso es otra decisión, y más grande.
+
+**Rotar la clave:** cambiar el valor en las propiedades del script. Cada admin tendrá que
+reconectar el panel con la nueva; las anteriores dejan de funcionar al instante.
+
+**Cómo se comprueba:**
+
+1. `node probar-stats.js` (en `INDUCCION-ADULTOS/05-Generador-Cursos/`) — 22 comprobaciones
+   locales, sin red: el GET público no puede traer un nombre, un correo, un grupo ni un
+   código de certificado.
+2. `node verificar-backend.js` — su Paso 4 llama al endpoint de producción **sin clave** y
+   falla si vuelve con gente dentro.
 
 ---
 
