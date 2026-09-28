@@ -56,10 +56,10 @@
     "name": "Línea Programa de Jóvenes",
     "icon": "🎒",
     "description": "Panel administrativo de la Línea Programa de Jóvenes. Formación para adultos que dirigen las ramas: manada, tropa, comunidad y clan.",
-    "audience": "21 cursos activos · Niveles 1, 2 y 3 completos + Nivel 4 en marcha",
+    "audience": "22 cursos activos · Niveles 1, 2 y 3 completos + Nivel 4 en marcha",
     "url": "dashboard.html?linea=programa-jovenes",
     "status": "active",
-    "coursesActive": 21,
+    "coursesActive": 22,
     "coursesPlanned": 25,
     "color": "#00afef",
     "courseIds": [
@@ -83,7 +83,8 @@
       "comisionado-programa-jovenes",
       "consejero-juvenil",
       "red-de-jovenes",
-      "a-salvo-del-peligro-programa"
+      "a-salvo-del-peligro-programa",
+      "marco-mundo-mejor-ods"
     ]
   },
   {
