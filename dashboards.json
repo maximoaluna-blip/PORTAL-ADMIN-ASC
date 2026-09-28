@@ -23,10 +23,10 @@
     "name": "Línea Desarrollo Institucional",
     "icon": "🏛️",
     "description": "Panel administrativo de la Línea Desarrollo Institucional. Gobernanza, planeación, finanzas sanas, salud institucional y los 8 ámbitos de gestión PNDI 2017.",
-    "audience": "6 cursos activos · Nivel 1 completo",
+    "audience": "7 cursos activos · Nivel 1 completo y Nivel 2 abierto",
     "url": "dashboard.html?linea=desarrollo-institucional",
     "status": "active",
-    "coursesActive": 6,
+    "coursesActive": 7,
     "coursesPlanned": 24,
     "color": "#1565C0",
     "courseIds": [
@@ -35,7 +35,8 @@
       "niveles-y-estructura-movimiento",
       "los-8-ambitos-de-gestion",
       "buenas-practicas-en-tu-grupo",
-      "mi-aporte-al-desarrollo-institucional"
+      "mi-aporte-al-desarrollo-institucional",
+      "gobernanza-practica"
     ]
   },
   {
