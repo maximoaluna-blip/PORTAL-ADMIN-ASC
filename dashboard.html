@@ -231,7 +231,7 @@ body {
 
 .dash-header .meta {
     font-size: 0.85em;
-    color: #888;
+    color: #636363;
 }
 
 .dash-actions {
@@ -293,10 +293,15 @@ body {
     min-width: 160px;
 }
 
+/* 27-sep-2026 -- auditoria del panel CONECTADO y con datos. La prueba de siempre lo audita
+   DESCONECTADO: el modal de conexion tapa esta barra, y por eso no vio nunca que las cinco
+   <label> no llevaban 'for' (un lector de pantalla anunciaba desplegables sin nombre: axe
+   CRITICAL) ni que estos grises -#888 y #aaa- daban 3.54:1 y 2.32:1. Pasan a #636363, el de
+   la casa. El panel de Rover, que es una copia de este, tenia exactamente lo mismo. */
 .filter-group label {
     font-size: 0.75em;
     font-weight: 600;
-    color: #888;
+    color: #636363;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -322,7 +327,7 @@ body {
 .btn-filter-clear {
     background: transparent;
     border: 1px solid #ccc;
-    color: #888;
+    color: #636363;
     padding: 8px 14px;
     font-family: 'Montserrat', sans-serif;
     font-size: 0.8em;
@@ -588,7 +593,7 @@ table tbody td {
 .no-data {
     text-align: center;
     padding: 40px 20px;
-    color: #aaa;
+    color: #636363;
     font-size: 0.95em;
 }
 
@@ -820,7 +825,7 @@ table tbody td {
         <div class="dash-header">
             <div>
                 <h1 id="dashTitle">Plataforma Administrativa</h1>
-                <div class="meta"><a href="index.html" style="color:#622599;text-decoration:none;">&larr; Volver al portal</a> &middot; Ultima actualizacion: <span id="lastUpdate">--</span> | Proxima en: <span id="nextRefresh">5:00</span></div>
+                <div class="meta"><a href="index.html" style="color:#622599;text-decoration:underline;">&larr; Volver al portal</a> &middot; Ultima actualizacion: <span id="lastUpdate">--</span> | Proxima en: <span id="nextRefresh">5:00</span></div>
             </div>
             <div class="dash-actions">
                 <button class="btn-secondary" onclick="fetchData()">&#8635; Actualizar</button>
@@ -831,29 +836,29 @@ table tbody td {
         <!-- Filters -->
         <div class="filters-bar">
             <div class="filter-group">
-                <label>Línea formativa</label>
+                <label for="filterLinea">Línea formativa</label>
                 <select id="filterLinea" onchange="onLineaChange()">
                     <option value="">Todas las líneas</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Region</label>
+                <label for="filterRegion">Region</label>
                 <select id="filterRegion" onchange="applyFilters()">
                     <option value="">Todas las regiones</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Curso</label>
+                <label for="filterCourse">Curso</label>
                 <select id="filterCourse" onchange="applyFilters()">
                     <option value="">Todos los cursos</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Fecha desde</label>
+                <label for="filterDateFrom">Fecha desde</label>
                 <input type="date" id="filterDateFrom" onchange="applyFilters()">
             </div>
             <div class="filter-group">
-                <label>Fecha hasta</label>
+                <label for="filterDateTo">Fecha hasta</label>
                 <input type="date" id="filterDateTo" onchange="applyFilters()">
             </div>
             <button class="btn-filter-clear" onclick="clearFilters()">Limpiar filtros</button>
