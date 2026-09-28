@@ -49,7 +49,7 @@
     "audience": "13 cursos activos · Nivel 1 completo + Nivel 2 en marcha",
     "url": "dashboard.html?linea=programa-jovenes",
     "status": "active",
-    "coursesActive": 17,
+    "coursesActive": 20,
     "coursesPlanned": 25,
     "color": "#00afef",
     "courseIds": [
@@ -69,7 +69,10 @@
       "planeacion-reuniones-oda",
       "ciclo-programa-abp",
       "jefe-de-rama",
-      "acompanamiento-progresion-personal"
+      "acompanamiento-progresion-personal",
+      "comisionado-programa-jovenes",
+      "consejero-juvenil",
+      "red-de-jovenes"
     ]
   },
   {
