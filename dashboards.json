@@ -59,7 +59,7 @@
     "audience": "22 cursos activos · Niveles 1, 2 y 3 completos + Nivel 4 en marcha",
     "url": "dashboard.html?linea=programa-jovenes",
     "status": "active",
-    "coursesActive": 22,
+    "coursesActive": 23,
     "coursesPlanned": 25,
     "color": "#00afef",
     "courseIds": [
@@ -84,7 +84,8 @@
       "consejero-juvenil",
       "red-de-jovenes",
       "a-salvo-del-peligro-programa",
-      "marco-mundo-mejor-ods"
+      "marco-mundo-mejor-ods",
+      "kit-constructores-paz"
     ]
   },
   {
