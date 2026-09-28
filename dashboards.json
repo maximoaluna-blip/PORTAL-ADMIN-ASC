@@ -86,12 +86,13 @@
     "audience": "Toda persona adulta vinculada a la ASC",
     "url": "dashboard.html?linea=politicas-transversales",
     "status": "active",
-    "coursesActive": 5,
+    "coursesActive": 6,
     "coursesPlanned": 22,
     "color": "#2E7D32",
     "courseIds": [
       "adulto-garante-entorno-seguro",
       "bienvenida-politicas-transversales",
+      "diversidad-e-inclusion-movimiento",
       "entornos-seguros-politica-asp",
       "gestion-para-la-motivacion",
       "mi-compromiso-entornos-seguros"
