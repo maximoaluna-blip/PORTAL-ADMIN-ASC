@@ -14,7 +14,7 @@ Una landing con una tarjeta por línea formativa, más una **vista global** (`da
 
 | Línea | Estado | Dashboard |
 |---|---|---|
-| 📜 Política de Adultos en el Movimiento | Activo · 5 cursos | [Abrir](https://maximoaluna-blip.github.io/PORTAL-ADMIN-ASC/dashboard.html?linea=politica-adultos) |
+| 📜 Política de Adultos en el Movimiento | Activo · 10 cursos | [Abrir](https://maximoaluna-blip.github.io/PORTAL-ADMIN-ASC/dashboard.html?linea=politica-adultos) |
 | 🏛️ Desarrollo Institucional | Activo · 6 cursos (Nivel 1 completo) | [Abrir](https://maximoaluna-blip.github.io/PORTAL-ADMIN-ASC/dashboard.html?linea=desarrollo-institucional) |
 | 🎒 Programa de Jóvenes | Activo · 8 cursos (Nivel 1 completo + Nivel 2 en marcha) | [Abrir](https://maximoaluna-blip.github.io/PORTAL-ADMIN-ASC/dashboard.html?linea=programa-jovenes) |
 | 🛡️ Políticas Transversales | Próximamente | — |
