@@ -3,12 +3,12 @@
     "id": "politica-adultos",
     "name": "Línea Política de Adultos",
     "icon": "📜",
-    "description": "Panel administrativo de la Línea Política de Adultos en el Movimiento. Cursos sobre marco filosófico, ciclo del adulto, 7 competencias y plan personal (Nivel 1) y la práctica de cada fase del ciclo (Nivel 2).",
-    "audience": "10 cursos activos · Niveles 1 y 2 desplegados",
+    "description": "Panel administrativo de la Línea Política de Adultos en el Movimiento. Cursos sobre marco filosófico, ciclo del adulto, 7 competencias y plan personal (Nivel 1) la práctica de cada fase del ciclo (Nivel 2) y los cargos del Grupo y la Región (Nivel 3).",
+    "audience": "15 cursos activos · Niveles 1, 2 y 3 desplegados · línea completa",
     "url": "dashboard.html?linea=politica-adultos",
     "status": "active",
-    "coursesActive": 10,
-    "coursesPlanned": 17,
+    "coursesActive": 15,
+    "coursesPlanned": 15,
     "color": "#622599",
     "courseIds": [
       "bienvenida-adultos",
@@ -20,7 +20,12 @@
       "asesor-personal",
       "evaluacion-360",
       "talento-360",
-      "decisiones-para-el-futuro"
+      "decisiones-para-el-futuro",
+      "cargos-del-grupo",
+      "consejero-de-grupo",
+      "canciller-de-grupo",
+      "comisionado-regional-adultos",
+      "jefe-de-grupo"
     ]
   },
   {
