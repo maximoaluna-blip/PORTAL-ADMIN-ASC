@@ -106,7 +106,7 @@
     "audience": "Toda persona adulta vinculada a la ASC",
     "url": "dashboard.html?linea=politicas-transversales",
     "status": "active",
-    "coursesActive": 8,
+    "coursesActive": 9,
     "coursesPlanned": 22,
     "color": "#2E7D32",
     "courseIds": [
@@ -117,7 +117,8 @@
       "gestion-para-la-motivacion",
       "mi-compromiso-entornos-seguros",
       "motivar-al-equipo-de-dirigentes",
-      "rutas-de-atencion-primeros-auxilios"
+      "rutas-de-atencion-primeros-auxilios",
+      "senales-maltrato-negligencia-vif"
     ]
   }
 ]
