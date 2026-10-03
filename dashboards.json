@@ -33,11 +33,11 @@
     "name": "Línea Desarrollo Institucional",
     "icon": "🏛️",
     "description": "Panel administrativo de la Línea Desarrollo Institucional. Gobernanza, planeación, finanzas sanas, salud institucional y los 8 ámbitos de gestión PNDI 2017.",
-    "audience": "17 cursos activos · Niveles 1, 2 y 3 completos",
+    "audience": "20 cursos activos · Niveles 1 a 4 completos",
     "url": "dashboard.html?linea=desarrollo-institucional",
     "status": "active",
-    "coursesActive": 17,
-    "coursesPlanned": 21,
+    "coursesActive": 20,
+    "coursesPlanned": 20,
     "color": "#1565C0",
     "courseIds": [
       "bienvenida-desarrollo-institucional",
@@ -56,7 +56,10 @@
       "gestion-del-riesgo",
       "conducir-el-consejo",
       "comisionado-region-nacion",
-      "control-y-disciplina"
+      "control-y-disciplina",
+      "salud-institucional-gsat",
+      "etica-e-integridad",
+      "planes-mundial-regional"
     ]
   },
   {
@@ -106,7 +109,7 @@
     "audience": "Toda persona adulta vinculada a la ASC",
     "url": "dashboard.html?linea=politicas-transversales",
     "status": "active",
-    "coursesActive": 9,
+    "coursesActive": 10,
     "coursesPlanned": 22,
     "color": "#2E7D32",
     "courseIds": [
@@ -118,7 +121,8 @@
       "mi-compromiso-entornos-seguros",
       "motivar-al-equipo-de-dirigentes",
       "rutas-de-atencion-primeros-auxilios",
-      "senales-maltrato-negligencia-vif"
+      "senales-maltrato-negligencia-vif",
+      "cuidado-del-adulto-salud-mental"
     ]
   }
 ]
