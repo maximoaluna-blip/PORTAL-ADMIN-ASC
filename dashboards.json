@@ -109,7 +109,7 @@
     "audience": "Toda persona adulta vinculada a la ASC",
     "url": "dashboard.html?linea=politicas-transversales",
     "status": "active",
-    "coursesActive": 11,
+    "coursesActive": 12,
     "coursesPlanned": 22,
     "color": "#2E7D32",
     "courseIds": [
@@ -123,7 +123,8 @@
       "rutas-de-atencion-primeros-auxilios",
       "senales-maltrato-negligencia-vif",
       "cuidado-del-adulto-salud-mental",
-      "actividades-seguras-y-datos"
+      "actividades-seguras-y-datos",
+      "inclusion-personas-con-discapacidad"
     ]
   }
 ]
