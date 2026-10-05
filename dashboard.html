@@ -764,6 +764,38 @@ table tbody td {
 .tasa-mala    { color: #c62828; }
 .tasa-regular { color: #bf360c; }
 .tasa-buena   { color: #2e7d32; }
+
+/* Embudo por curso. Mismos tonos medidos de arriba: nada de color inline. */
+.resumen-embudo { font-weight: 600; color: #2c2927; margin-bottom: 14px; }
+.resumen-embudo:empty { display: none; }
+.curso-embudo { border: 1px solid #e3e7ea; padding: 10px 14px; }
+.curso-embudo summary { cursor: pointer; font-weight: 700; color: #2c2927; }
+.curso-embudo summary .meta { font-weight: 400; margin-left: 6px; }
+.curso-embudo .chart-container { margin-top: 12px; gap: 10px; }
+.curso-embudo .chart-label { width: 280px; text-align: left; }
+.chart-row.peor-caida .chart-bar-track { box-shadow: inset 0 0 0 2px #c62828; }
+.caida { color: #c62828; font-weight: 700; }
+.chart-bar-value { width: auto; min-width: 110px; }
+
+/* Preguntas a revisar */
+#itemsTable tbody tr.item-fila { cursor: pointer; }
+#itemsTable td.item-pregunta { max-width: 420px; }
+#itemsTable .item-leccion { display: block; color: #5f6b73; font-size: 0.85em; }
+#itemsTable tr.pocos-datos td { color: #5f6b73; }
+#itemsTable tr.pocos-datos .tasa { color: #5f6b73; }
+.etiqueta-pocos { display: inline-block; font-size: 0.75em; border: 1px solid #8a959c;
+    color: #5f6b73; padding: 0 6px; margin-left: 6px; white-space: nowrap; }
+#itemsTable tr.item-detalle td { background: #f7f9fa; }
+.opciones-lista { list-style: none; margin: 0; padding: 0; }
+.opciones-lista li { padding: 4px 0; }
+.opciones-lista .op-correcta { color: #2e7d32; font-weight: 600; }
+.opciones-lista .op-cuenta { font-weight: 700; margin-right: 8px; display: inline-block; min-width: 2.5em; }
+@media (max-width: 768px) {
+    /* El nombre de la leccion es lo que se lee: arriba y entero, no cortado a 100px. */
+    .curso-embudo .chart-row { flex-wrap: wrap; gap: 4px 10px; }
+    .curso-embudo .chart-label { width: 100%; text-align: left; white-space: normal; }
+    .chart-bar-value { min-width: 0; }
+}
     </style>
 </head>
 <body>
@@ -897,12 +929,18 @@ table tbody td {
             </div>
         </div>
 
-        <!-- Chart: Completacion por Modulo -->
+        <!-- Embudo por curso: en que leccion se queda la gente (ADR-030) -->
         <div class="section">
             <div class="section-header">
-                <h2>Completacion por Modulo</h2>
+                <h2>D&oacute;nde se queda la gente</h2>
             </div>
             <div class="section-body">
+                <p class="meta" style="margin-bottom:12px">
+                    Cada barra es el porcentaje de quienes se inscribieron en el curso que
+                    complet&oacute; esa lecci&oacute;n. El recuadro rojo marca la ca&iacute;da m&aacute;s
+                    fuerte de cada curso: es la lecci&oacute;n que hay que mirar primero.
+                </p>
+                <p class="resumen-embudo" id="embudoResumen"></p>
                 <div class="chart-container" id="moduleChart">
                     <div class="no-data">
                         <div class="no-data-icon">&#128202;</div>
@@ -915,7 +953,7 @@ table tbody td {
         <!-- Analisis de items: que pregunta falla la gente (ADR-030, Kirkpatrick nivel 2) -->
         <div class="section">
             <div class="section-header">
-                <h2>Preguntas que mas se fallan</h2>
+                <h2>Preguntas a revisar</h2>
                 <span class="meta" id="itemsCount">sin datos</span>
             </div>
             <div class="section-body">
@@ -923,19 +961,21 @@ table tbody td {
                     Cuenta <strong>todos</strong> los intentos, incluidos los reprobados, y es
                     an&oacute;nima: no dice qui&eacute;n fall&oacute;, dice qu&eacute; pregunta falla.
                     Una tasa de acierto muy baja suele ser un &iacute;tem mal redactado o contenido
-                    que la lecci&oacute;n no alcanz&oacute; a ense&ntilde;ar. Una del 100&nbsp;% a la
-                    primera puede ser una pregunta regalada.
+                    que la lecci&oacute;n no alcanz&oacute; a ense&ntilde;ar; la <strong>respuesta
+                    incorrecta m&aacute;s elegida</strong> dice qu&eacute; confunde. Una del 100&nbsp;% a la
+                    primera puede ser una pregunta regalada. Con menos de 5 intentos la cifra
+                    todav&iacute;a no dice nada: esas van al final, en gris. Haz clic en una fila para
+                    ver todas las opciones.
                 </p>
                 <div class="table-wrapper">
                     <table id="itemsTable">
                         <thead>
                             <tr>
-                                <th>Curso</th>
-                                <th>M&oacute;dulo</th>
+                                <th>Curso y lecci&oacute;n</th>
                                 <th>Pregunta</th>
                                 <th>Intentos</th>
-                                <th>Aciertos</th>
-                                <th>Tasa de acierto</th>
+                                <th>Acierto</th>
+                                <th>Respuesta incorrecta m&aacute;s elegida</th>
                             </tr>
                         </thead>
                         <tbody id="itemsBody"></tbody>
@@ -945,6 +985,7 @@ table tbody td {
                     <div class="no-data-icon">&#129513;</div>
                     <div>A&uacute;n no hay intentos registrados</div>
                 </div>
+                <p class="meta" id="itemsNota" style="margin-top:10px"></p>
             </div>
         </div>
 
@@ -1040,7 +1081,10 @@ let state = {
     countdown: 300,
     // --- Multi-linea ---
     lineas: [],          // catálogo de líneas con sus courseIds (cargado de dashboards.json)
-    currentLinea: ''     // id de línea actualmente filtrada ('' = todas)
+    currentLinea: '',    // id de línea actualmente filtrada ('' = todas)
+    // Textos de los cursos (titulo, lecciones, preguntas), leidos de los JSON
+    // publicos de cada linea. courseId -> objeto, o null si no se pudo leer.
+    contenido: {}
 };
 
 // Lee ?linea=X de la URL al cargar
@@ -1059,6 +1103,7 @@ function loadLineasCatalog() {
                     id: l.id,
                     name: l.name,
                     color: l.color || '#622599',
+                    repoUrl: l.repoUrl || '',
                     courseIds: l.courseIds || []
                 };
             });
@@ -1452,6 +1497,91 @@ function applyFilters() {
     renderItems();
     renderRegistros();
     filterCerts(); // applies search + renders
+    // Pinta ya con codigos y repinta con los nombres cuando lleguen los JSON.
+    cargarContenido().then(function(huboNuevos) {
+        if (huboNuevos) { renderChart(); renderItems(); }
+    });
+}
+
+// --- Contenido de los cursos -------------------------------------------------
+// El backend solo guarda numeros: curso, leccion y pregunta. Lo que hace legible
+// el embudo y las preguntas -titulos, enunciados, opciones- vive en el JSON de
+// cada curso, que la linea publica en su repo (`repoUrl` en dashboards.json).
+// Son textos del curso, no datos de personas. El numero de leccion del backend
+// es el `id` del modulo; el de pregunta, su posicion en `quiz.questions`; y la
+// opcion elegida, su posicion ORIGINAL en `options` (el motor la guarda antes
+// del barajado).
+function repoDeCurso(courseId) {
+    for (var i = 0; i < state.lineas.length; i++) {
+        var l = state.lineas[i];
+        if (l.repoUrl && l.courseIds.indexOf(courseId) !== -1) return l.repoUrl;
+    }
+    return '';
+}
+
+function cursosConDatos() {
+    var ids = {};
+    var d = state.data || {};
+    (d.modulos || []).forEach(function(m) { ids[m.curso] = true; });
+    (d.items || []).forEach(function(it) { ids[it.curso] = true; });
+    // Solo lo que se esta viendo: con una linea filtrada no hace falta bajar
+    // los JSON de las otras tres. Al cambiar de linea se piden los que falten.
+    return Object.keys(ids).filter(enAlcance);
+}
+
+// Resuelve true si leyo al menos un curso nuevo. Nunca rechaza: un curso que no
+// carga queda en null y su seccion sigue con los codigos.
+function cargarContenido() {
+    var faltan = cursosConDatos().filter(function(c) {
+        return !(c in state.contenido) && repoDeCurso(c);
+    });
+    if (!faltan.length) return Promise.resolve(false);
+    faltan.forEach(function(c) { state.contenido[c] = undefined; }); // en camino
+    return Promise.all(faltan.map(function(c) {
+        var url = repoDeCurso(c) + '05-Generador-Cursos/borradores/' + encodeURIComponent(c) + '.json';
+        return fetch(url, { cache: 'no-cache' })
+            .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+            .then(function(json) { state.contenido[c] = indexarCurso(json); })
+            .catch(function() { state.contenido[c] = null; });
+    })).then(function() { return true; });
+}
+
+function indexarCurso(json) {
+    var lecciones = {};
+    (json.modules || []).forEach(function(m) {
+        lecciones[String(m.id)] = {
+            titulo: sinEtiquetas(m.title || ''),
+            preguntas: (m.quiz && m.quiz.questions) || []
+        };
+    });
+    return { titulo: sinEtiquetas(json.title || ''), lecciones: lecciones };
+}
+
+// El JSON trae <strong>/<em> (ADR-053); aqui solo interesa el texto.
+function sinEtiquetas(s) {
+    return String(s).replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+}
+
+function tituloCurso(c) {
+    var ct = state.contenido[c];
+    return (ct && ct.titulo) || c;
+}
+
+function leccionDe(c, modulo) {
+    var ct = state.contenido[c];
+    return (ct && ct.lecciones[String(modulo)]) || null;
+}
+
+function cursoFiltrado() {
+    var el = document.getElementById('filterCourse');
+    return el ? el.value : '';
+}
+
+function enAlcance(courseId) {
+    var allowed = getAllowedCourseIds();
+    if (allowed && allowed.indexOf(courseId) === -1) return false;
+    var curso = cursoFiltrado();
+    return !curso || curso === courseId;
 }
 
 function clearFilters() {
@@ -1631,82 +1761,240 @@ function animateValue(id, target) {
 // --- Render Chart ---
 function renderChart() {
     var container = document.getElementById('moduleChart');
-    var modules = state.data ? (state.data.modulos || []) : [];
-
-    // Filtrar por línea activa
-    var allowed = getAllowedCourseIds();
-    if (allowed) {
-        modules = modules.filter(function(m) { return allowed.indexOf(m.curso) !== -1; });
-    }
+    var resumenEl = document.getElementById('embudoResumen');
+    var modules = (state.data ? (state.data.modulos || []) : []).filter(function(m) {
+        return enAlcance(m.curso);
+    });
 
     if (modules.length === 0) {
+        resumenEl.textContent = '';
         container.innerHTML = '<div class="no-data"><div class="no-data-icon">&#128202;</div><div>No hay datos para mostrar</div></div>';
         return;
     }
 
-    var max = Math.max.apply(null, modules.map(function(m) { return m.completados || 0; }));
-    if (max === 0) max = 1;
+    // Un bloque por curso. La base es cuantos se inscribieron en ese curso
+    // (`courseStats`, publico). Si hay mas completados que inscritos -los
+    // certificados sin inscripcion del ADR-080-, la base es el mayor completado,
+    // para que ninguna barra pase del 100 %.
+    var stats = cursosAgregados();
+    var porCurso = {};
+    modules.forEach(function(m) {
+        (porCurso[m.curso] = porCurso[m.curso] || []).push(m);
+    });
+
+    var cursos = Object.keys(porCurso).map(function(c) {
+        var filas = porCurso[c].slice().sort(function(a, b) {
+            return parseInt(a.modulo, 10) - parseInt(b.modulo, 10);
+        });
+        var inscritos = Number((stats[c] || {}).registrations) || 0;
+        var maxCompl = Math.max.apply(null, filas.map(function(m) { return m.completados || 0; }));
+        var peor = null;
+        filas.forEach(function(m) {
+            if ((m.abandonoPct || 0) > 0 && (!peor || m.abandonoPct > peor.abandonoPct)) peor = m;
+        });
+        return { id: c, filas: filas, base: Math.max(inscritos, maxCompl, 1),
+                 inscritos: inscritos, peor: peor };
+    });
+
+    // Primero el curso que mas gente pierde; luego el que mas gente tiene.
+    cursos.sort(function(a, b) {
+        var pa = a.peor ? a.peor.abandonoPct : 0, pb = b.peor ? b.peor.abandonoPct : 0;
+        return (pb - pa) || (b.base - a.base);
+    });
+
+    // La frase para informes: la mayor perdida de todo lo que se esta viendo.
+    var top = cursos[0] && cursos[0].peor ? cursos[0] : null;
+    if (top) {
+        var m = top.peor;
+        var anterior = top.filas[top.filas.indexOf(m) - 1];
+        resumenEl.textContent = 'Mayor pérdida: ' + tituloCurso(top.id) + ', ' +
+            (anterior ? 'de la lección ' + anterior.modulo + ' a la ' + m.modulo
+                      : 'antes de la lección ' + m.modulo) +
+            ' (−' + m.abandonoPct + ' %, ' + m.abandono + ' persona' + (m.abandono === 1 ? '' : 's') + ').';
+    } else {
+        resumenEl.textContent = 'Ninguna lección pierde gente todavía: quien empieza una lección llega a la siguiente.';
+    }
 
     var html = '';
-    modules.forEach(function(m) {
-        var pct = Math.round(((m.completados || 0) / max) * 100);
-        // Abandono: cuantos completaron la leccion anterior y no llegaron a esta.
-        // Lo calcula el backend (ADR-030); si viene de un despliegue viejo, no se pinta.
-        var caida = '';
-        if (m.abandonoPct > 0) {
-            caida = ' <span class="meta" style="color:#c62828" title="' + m.abandono +
-                    ' persona(s) completaron la leccion anterior y no llegaron a esta">&#8595;' +
-                    m.abandonoPct + '%</span>';
-        }
-        html += '<div class="chart-row">' +
-            '<div class="chart-label" title="' + escapeHtml(m.nombre) + '">' + escapeHtml(m.nombre) + '</div>' +
-            '<div class="chart-bar-track"><div class="chart-bar-fill" style="width:' + pct + '%"><span>' + (pct >= 15 ? m.completados : '') + '</span></div></div>' +
-            '<div class="chart-bar-value">' + m.completados + caida + '</div>' +
-            '</div>';
+    cursos.forEach(function(c, i) {
+        var abierto = (c.peor || cursos.length <= 3 || i === 0) ? ' open' : '';
+        html += '<details class="curso-embudo"' + abierto + '><summary>' + escapeHtml(tituloCurso(c.id)) +
+            '<span class="meta">' + textoBase(c) +
+            (c.peor ? ' · mayor caída en la lección ' + escapeHtml(String(c.peor.modulo)) : '') +
+            '</span></summary><div class="chart-container">';
+        c.filas.forEach(function(m) {
+            var lec = leccionDe(c.id, m.modulo);
+            var nombre = m.modulo + ' · ' + (lec ? lec.titulo : (m.nombre || 'Lección ' + m.modulo));
+            var pct = Math.round(((m.completados || 0) / c.base) * 100);
+            // Abandono: cuantos completaron la leccion anterior y no llegaron a esta.
+            // Lo calcula el backend (ADR-030); si viene de un despliegue viejo, no se pinta.
+            var caida = '';
+            if (m.abandonoPct > 0) {
+                caida = ' <span class="caida" title="' + m.abandono +
+                        ' persona(s) completaron la lección anterior y no llegaron a esta">&#8595;' +
+                        m.abandonoPct + '%</span>';
+            }
+            html += '<div class="chart-row' + (m === c.peor ? ' peor-caida' : '') + '">' +
+                '<div class="chart-label" title="' + escapeHtml(nombre) + '">' + escapeHtml(nombre) + '</div>' +
+                '<div class="chart-bar-track"><div class="chart-bar-fill" style="width:' + pct + '%"><span>' + (pct >= 15 ? pct + '%' : '') + '</span></div></div>' +
+                '<div class="chart-bar-value">' + m.completados + ' de ' + c.base + caida + '</div>' +
+                '</div>';
+        });
+        html += '</div></details>';
     });
 
     container.innerHTML = html;
 }
 
-// --- Render Analisis de Items (ADR-030) ---
+// De donde sale el «de N» de las barras. Si hay mas gente avanzando que
+// inscripciones, se dice: es quien entro con «Recuperar mi Avance» antes del
+// ADR-080, que no lo inscribia. Sin la aclaracion, «1 inscrito» y «2 de 2» se
+// leen como un error del panel.
+function textoBase(c) {
+    var p = function(n) { return n + (n === 1 ? ' persona' : ' personas'); };
+    if (c.base > c.inscritos) {
+        return p(c.base) + ' empezaron · ' + (c.inscritos ? c.inscritos : 'ninguna') +
+               ' con inscripción registrada (el resto entró recuperando su avance)';
+    }
+    return p(c.inscritos) + ' inscrita' + (c.inscritos === 1 ? '' : 's');
+}
+
+// --- Render Preguntas a revisar (ADR-030) ---
+// Menos intentos que esto y la tasa no dice nada de la pregunta: 0 de 1 es una
+// persona, no un item roto. Esas van al final y en gris.
+var MIN_INTENTOS = 5;
+
 function renderItems() {
     var tbody = document.getElementById('itemsBody');
     var emptyEl = document.getElementById('itemsEmpty');
     var countEl = document.getElementById('itemsCount');
+    var notaEl = document.getElementById('itemsNota');
     if (!tbody) return;
 
-    var items = state.data ? (state.data.items || []) : [];
-
-    var allowed = getAllowedCourseIds();
-    if (allowed) {
-        items = items.filter(function(it) { return allowed.indexOf(it.curso) !== -1; });
-    }
+    var items = (state.data ? (state.data.items || []) : []).filter(function(it) {
+        return enAlcance(it.curso);
+    });
 
     if (items.length === 0) {
         tbody.innerHTML = '';
         if (emptyEl) emptyEl.style.display = '';
         if (countEl) countEl.textContent = 'sin datos';
+        if (notaEl) notaEl.textContent = '';
         return;
     }
     if (emptyEl) emptyEl.style.display = 'none';
-    if (countEl) countEl.textContent = items.length + ' pregunta(s) con intentos';
+
+    var filas = items.map(function(it) {
+        var lec = leccionDe(it.curso, it.modulo);
+        var qi = parseInt(it.pregunta, 10);
+        var preg = (lec && !isNaN(qi)) ? (lec.preguntas[qi] || null) : null;
+        return { it: it, lec: lec, preg: preg, qi: qi,
+                 suficiente: (it.intentos || 0) >= MIN_INTENTOS,
+                 cargado: state.contenido[it.curso] !== undefined };
+    });
+
+    // Las que tienen datos suficientes primero; dentro de cada grupo, la peor
+    // tasa arriba y, a igual tasa, la que mas intentos tiene.
+    filas.sort(function(a, b) {
+        if (a.suficiente !== b.suficiente) return a.suficiente ? -1 : 1;
+        return ((a.it.tasaAcierto || 0) - (b.it.tasaAcierto || 0)) ||
+               ((b.it.intentos || 0) - (a.it.intentos || 0));
+    });
+
+    var nSuf = filas.filter(function(f) { return f.suficiente; }).length;
+    if (countEl) {
+        countEl.textContent = filas.length + ' pregunta(s) con intentos · ' + nSuf +
+            ' con ' + MIN_INTENTOS + ' o más';
+    }
 
     var html = '';
-    items.forEach(function(it) {
+    filas.forEach(function(f, idx) {
+        var it = f.it;
         var tasa = it.tasaAcierto || 0;
         // <50% es un item que hay que mirar; >=80% va bien
         var clase = tasa < 50 ? 'tasa-mala' : (tasa < 80 ? 'tasa-regular' : 'tasa-buena');
-        html += '<tr>' +
-            '<td>' + escapeHtml(String(it.curso)) + '</td>' +
-            '<td>' + escapeHtml(String(it.modulo)) + '</td>' +
-            '<td>' + (isNaN(parseInt(it.pregunta, 10)) ? escapeHtml(String(it.pregunta)) : (parseInt(it.pregunta, 10) + 1)) + '</td>' +
+        var numPreg = isNaN(f.qi) ? String(it.pregunta) : String(f.qi + 1);
+        var leccion = 'Lección ' + it.modulo + (f.lec ? ' · ' + f.lec.titulo : '');
+        var enunciado = f.preg ? sinEtiquetas(f.preg.text) :
+            (f.cargado && state.contenido[it.curso] ? 'Pregunta ' + numPreg +
+                ' — ya no existe en la versión actual del curso' : 'Pregunta ' + numPreg);
+
+        html += '<tr class="item-fila' + (f.suficiente ? '' : ' pocos-datos') + '" data-idx="' + idx + '"' +
+            ' tabindex="0" aria-expanded="false" title="Clic para ver todas las opciones">' +
+            '<td>' + escapeHtml(tituloCurso(it.curso)) + '<span class="item-leccion">' + escapeHtml(leccion) + '</span></td>' +
+            '<td class="item-pregunta">' + escapeHtml(enunciado) +
+                (f.suficiente ? '' : '<span class="etiqueta-pocos">pocos datos</span>') + '</td>' +
             '<td>' + it.intentos + '</td>' +
-            '<td>' + it.aciertos + '</td>' +
-            '<td class="tasa ' + clase + '">' + tasa + '%</td>' +
-            '</tr>';
+            '<td class="tasa ' + clase + '">' + tasa + '%<span class="item-leccion">' + it.aciertos + ' de ' + it.intentos + '</span></td>' +
+            '<td>' + escapeHtml(textoErrorFrecuente(f)) + '</td>' +
+            '</tr>' +
+            '<tr class="item-detalle" data-detalle="' + idx + '" hidden><td colspan="5">' + detalleOpciones(f) + '</td></tr>';
     });
     tbody.innerHTML = html;
+
+    if (notaEl) {
+        var sinTexto = filas.some(function(f) { return state.contenido[f.it.curso] === null; });
+        notaEl.textContent = 'Los enunciados son los de la versión publicada hoy de cada curso: si una ' +
+            'pregunta se reescribió después de que alguien la respondiera, el texto puede no ser el que vio.' +
+            (sinTexto ? ' No se pudo leer el contenido de algún curso: esas filas muestran solo los números.' : '');
+    }
 }
+
+// La opcion incorrecta que mas se eligio, con su texto. `elecciones` trae
+// {indiceOriginal: veces}, con -1 = sin responder.
+function textoErrorFrecuente(f) {
+    var el = f.it.elecciones || {};
+    var correcta = f.preg ? f.preg.correctIndex : null;
+    var mejor = null;
+    Object.keys(el).forEach(function(k) {
+        var i = parseInt(k, 10);
+        if (i < 0 || i === correcta) return;
+        if (!mejor || el[k] > mejor.n) mejor = { i: i, n: el[k] };
+    });
+    if (!mejor) return '—';
+    var txt = (f.preg && f.preg.options[mejor.i] !== undefined)
+        ? sinEtiquetas(f.preg.options[mejor.i]) : 'Opción ' + (mejor.i + 1);
+    return txt + ' (' + mejor.n + ' de ' + f.it.intentos + ')';
+}
+
+function detalleOpciones(f) {
+    var el = f.it.elecciones || {};
+    if (!f.preg) {
+        var partes = Object.keys(el).map(function(k) {
+            return (parseInt(k, 10) < 0 ? 'Sin responder' : 'Opción ' + (parseInt(k, 10) + 1)) + ': ' + el[k];
+        });
+        return '<span class="meta">Sin el texto del curso. Elecciones: ' + escapeHtml(partes.join(' · ') || '—') + '</span>';
+    }
+    var html = '<ul class="opciones-lista">';
+    f.preg.options.forEach(function(op, i) {
+        var ok = i === f.preg.correctIndex;
+        html += '<li' + (ok ? ' class="op-correcta"' : '') + '><span class="op-cuenta">' + (el[i] || 0) + '</span>' +
+            escapeHtml(sinEtiquetas(op)) + (ok ? ' ✓ correcta' : '') + '</li>';
+    });
+    if (el['-1']) html += '<li><span class="op-cuenta">' + el['-1'] + '</span>Sin responder</li>';
+    return html + '</ul>';
+}
+
+// Desplegar las opciones de una pregunta. Delegado en el tbody: las filas se
+// regeneran en cada refresco.
+document.addEventListener('DOMContentLoaded', function() {
+    var tbody = document.getElementById('itemsBody');
+    if (!tbody) return;
+    function alternar(tr) {
+        var det = tbody.querySelector('tr[data-detalle="' + tr.getAttribute('data-idx') + '"]');
+        if (!det) return;
+        det.hidden = !det.hidden;
+        tr.setAttribute('aria-expanded', String(!det.hidden));
+    }
+    tbody.addEventListener('click', function(e) {
+        var tr = e.target.closest('tr.item-fila');
+        if (tr) alternar(tr);
+    });
+    tbody.addEventListener('keydown', function(e) {
+        var tr = e.target.closest('tr.item-fila');
+        if (tr && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); alternar(tr); }
+    });
+});
 
 // --- Render Registros ---
 function renderRegistros() {
