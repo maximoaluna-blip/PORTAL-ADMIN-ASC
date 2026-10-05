@@ -1598,6 +1598,7 @@ function totalesDesdeCursos() {
 // null = no se sabe (sin detalle y con un filtro que lo necesita): guion, no 0.
 function setValue(id, target) {
     if (target === null) {
+        clearInterval(document.getElementById(id)._timer);
         document.getElementById(id).textContent = '—';
         return;
     }
@@ -1606,6 +1607,10 @@ function setValue(id, target) {
 
 function animateValue(id, target) {
     var el = document.getElementById(id);
+    // Parar la animacion anterior: si sigue viva, al terminar escribe SU cifra
+    // encima de la nueva, y al cambiar de linea rapido la tarjeta se quedaba con
+    // el total de otra linea (04-oct-2026: «Todas» mostraba 5 en vez de 21).
+    clearInterval(el._timer);
     var current = parseInt(el.textContent) || 0;
     if (current === target) { el.textContent = target; return; }
 
@@ -1613,7 +1618,7 @@ function animateValue(id, target) {
     var step = Math.ceil(Math.abs(target - current) / 30);
     var dir = target > current ? 1 : -1;
 
-    var timer = setInterval(function() {
+    var timer = el._timer = setInterval(function() {
         current += step * dir;
         if ((dir > 0 && current >= target) || (dir < 0 && current <= target)) {
             current = target;
