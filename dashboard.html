@@ -1383,6 +1383,11 @@ function populateFilters() {
         if (!inLinea(c.curso)) return;
         if (c.curso) courses.add(c.curso);
     });
+    // Sin detalle (ADR-078) los cursos salen de los agregados publicos, o el
+    // selector de curso se queda vacio justo cuando es el unico filtro que sirve.
+    Object.keys(cursosAgregados()).forEach(function(c) {
+        if (c !== 'sin-curso' && inLinea(c)) courses.add(c);
+    });
 
     var regionSelect = document.getElementById('filterRegion');
     var currentRegion = regionSelect.value;
@@ -1511,8 +1516,27 @@ function renderSummary() {
         }
     }
 
-    animateValue('totalRovers', totalRovers);
-    animateValue('totalCerts', totalCerts);
+    // Con filtro de linea o curso y SIN detalle (ADR-078), las cuentas locales
+    // dan 0 porque no llego ninguna fila, no porque no haya nadie: el panel de
+    // cada linea salia en cero con 21 inscripciones en la hoja (04-oct-2026).
+    // `courseStats` es publico y viene por curso, asi que alcanza para linea y
+    // curso. Region y fechas no: esas necesitan las filas, y se pinta un guion.
+    var porAgregados = filtersActive && data._sinDetalle;
+    if (porAgregados) {
+        var soloLineaOCurso = !document.getElementById('filterRegion').value &&
+                              !document.getElementById('filterDateFrom').value &&
+                              !document.getElementById('filterDateTo').value;
+        var t = soloLineaOCurso ? totalesDesdeCursos() : null;
+        totalRovers = t ? t.inscripciones : null;
+        totalCerts = t ? t.certificados : null;
+        avg = t ? t.promedio : '—';
+        // La tasa NO se saca de aqui: `courseStats` no dice cuantas inscripciones
+        // terminaron, y certificados / inscripciones es la division del 105 % (ADR-079).
+        rate = null;
+    }
+
+    setValue('totalRovers', totalRovers);
+    setValue('totalCerts', totalCerts);
     document.getElementById('completionRate').textContent = (rate === null ? '—' : rate + '%');
     document.getElementById('avgScore').textContent = avg;
     document.getElementById('completionNote').textContent =
@@ -1542,6 +1566,42 @@ function textoTasa(rate, completadas, inscripciones, huerfanos, tasaVieja) {
             : ' certificados sin inscripcion que los respalde');
     }
     return txt;
+}
+
+// `courseStats` del payload publico: {curso: {registrations, certificates, avgScore}}.
+function cursosAgregados() {
+    var raw = state.data && state.data._rawAggregates;
+    return (raw && raw.courseStats) || {};
+}
+
+// Totales de la linea (y del curso, si hay uno elegido) sumando `courseStats`.
+// El promedio se pondera por certificados: es la media de las puntuaciones de
+// esos certificados, no la media de los promedios de cada curso.
+function totalesDesdeCursos() {
+    var stats = cursosAgregados();
+    var allowed = getAllowedCourseIds();
+    var course = document.getElementById('filterCourse').value;
+    var t = { inscripciones: 0, certificados: 0, suma: 0 };
+    Object.keys(stats).forEach(function(c) {
+        if (allowed && allowed.indexOf(c) === -1) return;
+        if (course && c !== course) return;
+        var s = stats[c] || {};
+        var certs = Number(s.certificates) || 0;
+        t.inscripciones += Number(s.registrations) || 0;
+        t.certificados += certs;
+        t.suma += (Number(s.avgScore) || 0) * certs;
+    });
+    t.promedio = t.certificados ? Math.round((t.suma / t.certificados) * 10) / 10 : 0;
+    return t;
+}
+
+// null = no se sabe (sin detalle y con un filtro que lo necesita): guion, no 0.
+function setValue(id, target) {
+    if (target === null) {
+        document.getElementById(id).textContent = '—';
+        return;
+    }
+    animateValue(id, target);
 }
 
 function animateValue(id, target) {
