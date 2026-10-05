@@ -113,7 +113,7 @@
     "url": "dashboard.html?linea=politicas-transversales",
     "repoUrl": "https://maximoaluna-blip.github.io/INDUCCION-POLITICAS-TRANSVERSALES/",
     "status": "active",
-    "coursesActive": 15,
+    "coursesActive": 16,
     "coursesPlanned": 22,
     "color": "#2E7D32",
     "courseIds": [
@@ -131,7 +131,8 @@
       "inclusion-personas-con-discapacidad",
       "inclusion-grupos-minoritarios",
       "responsable-asp-de-evento",
-      "dinamizador-espacios-oyeme"
+      "dinamizador-espacios-oyeme",
+      "consejero-de-grupo-y-entornos-seguros"
     ]
   }
 ]
