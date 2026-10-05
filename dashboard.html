@@ -786,6 +786,10 @@ table tbody td {
 .etiqueta-pocos { display: inline-block; font-size: 0.75em; border: 1px solid #8a959c;
     color: #5f6b73; padding: 0 6px; margin-left: 6px; white-space: nowrap; }
 #itemsTable tr.item-detalle td { background: #f7f9fa; }
+/* #4a2272 sobre blanco = 11.6:1; el borde es el mismo color. */
+.ver-opciones { display: block; margin-top: 6px; background: none; border: 1px solid #4a2272;
+    color: #4a2272; font: inherit; font-size: 0.8em; padding: 2px 8px; cursor: pointer; }
+.ver-opciones:focus-visible { outline: 2px solid #4a2272; outline-offset: 2px; }
 .opciones-lista { list-style: none; margin: 0; padding: 0; }
 .opciones-lista li { padding: 4px 0; }
 .opciones-lista .op-correcta { color: #2e7d32; font-weight: 600; }
@@ -1919,16 +1923,21 @@ function renderItems() {
             (f.cargado && state.contenido[it.curso] ? 'Pregunta ' + numPreg +
                 ' — ya no existe en la versión actual del curso' : 'Pregunta ' + numPreg);
 
-        html += '<tr class="item-fila' + (f.suficiente ? '' : ' pocos-datos') + '" data-idx="' + idx + '"' +
-            ' tabindex="0" aria-expanded="false" title="Clic para ver todas las opciones">' +
+        // El estado abierto/cerrado lo lleva un <button>, no el <tr>: una fila de
+        // tabla no admite aria-expanded fuera de un treegrid y axe lo marca como
+        // violacion seria (aria-conditional-attr). El clic en la fila se conserva
+        // como atajo de raton; el teclado entra por el boton.
+        html += '<tr class="item-fila' + (f.suficiente ? '' : ' pocos-datos') + '" data-idx="' + idx + '">' +
             '<td>' + escapeHtml(tituloCurso(it.curso)) + '<span class="item-leccion">' + escapeHtml(leccion) + '</span></td>' +
             '<td class="item-pregunta">' + escapeHtml(enunciado) +
-                (f.suficiente ? '' : '<span class="etiqueta-pocos">pocos datos</span>') + '</td>' +
+                (f.suficiente ? '' : '<span class="etiqueta-pocos">pocos datos</span>') +
+                '<button type="button" class="ver-opciones" aria-expanded="false" aria-controls="item-detalle-' + idx +
+                '">Ver opciones</button></td>' +
             '<td>' + it.intentos + '</td>' +
             '<td class="tasa ' + clase + '">' + tasa + '%<span class="item-leccion">' + it.aciertos + ' de ' + it.intentos + '</span></td>' +
             '<td>' + escapeHtml(textoErrorFrecuente(f)) + '</td>' +
             '</tr>' +
-            '<tr class="item-detalle" data-detalle="' + idx + '" hidden><td colspan="5">' + detalleOpciones(f) + '</td></tr>';
+            '<tr class="item-detalle" id="item-detalle-' + idx + '" data-detalle="' + idx + '" hidden><td colspan="5">' + detalleOpciones(f) + '</td></tr>';
     });
     tbody.innerHTML = html;
 
@@ -1984,15 +1993,17 @@ document.addEventListener('DOMContentLoaded', function() {
         var det = tbody.querySelector('tr[data-detalle="' + tr.getAttribute('data-idx') + '"]');
         if (!det) return;
         det.hidden = !det.hidden;
-        tr.setAttribute('aria-expanded', String(!det.hidden));
+        var btn = tr.querySelector('button.ver-opciones');
+        if (btn) {
+            btn.setAttribute('aria-expanded', String(!det.hidden));
+            btn.textContent = det.hidden ? 'Ver opciones' : 'Ocultar opciones';
+        }
     }
+    // Un solo manejador: el clic del boton (y Enter/Espacio, que el navegador
+    // convierte en clic) sube hasta aqui igual que el de la fila.
     tbody.addEventListener('click', function(e) {
         var tr = e.target.closest('tr.item-fila');
         if (tr) alternar(tr);
-    });
-    tbody.addEventListener('keydown', function(e) {
-        var tr = e.target.closest('tr.item-fila');
-        if (tr && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); alternar(tr); }
     });
 });
 
