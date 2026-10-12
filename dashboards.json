@@ -113,7 +113,7 @@
     "url": "dashboard.html?linea=politicas-transversales",
     "repoUrl": "https://maximoaluna-blip.github.io/INDUCCION-POLITICAS-TRANSVERSALES/",
     "status": "active",
-    "coursesActive": 19,
+    "coursesActive": 20,
     "coursesPlanned": 22,
     "color": "#2E7D32",
     "courseIds": [
@@ -135,7 +135,8 @@
       "consejero-de-grupo-y-entornos-seguros",
       "coordinador-regional-a-salvo-del-peligro",
       "referente-regional-de-promocion",
-      "autoevaluacion-institucional-asp"
+      "autoevaluacion-institucional-asp",
+      "gestion-del-cambio-en-el-grupo"
     ]
   }
 ]
